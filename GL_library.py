@@ -109,7 +109,40 @@ class Render(object):
     def point(self,x,y,Color=None):
         if (0 <= x < self.width) and (0 <= y < self.height):
             self.framebuffer[x][y] = Color or self.currentcolor
- 
+    
+    #Función para realizar una línea
+    def glLine(self, x0,y0, x1,y1, color = None):
+           
+        dy = abs(y1 - y0)
+        dx = abs(x1 - x0)
+        steep = dy > dx
+
+        if steep:
+            x0, y0 = y0, x0
+            x1, y1 = y1, x1
+
+        if x0 > x1:
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+
+        dy = abs(y1 - y0)
+        dx = abs(x1 - x0)
+
+        offset = 0
+        threshold = dx
+
+        y = int(y0)
+        for x in range(int(x0), int(x1 + 1)):
+            if steep:
+                self.point(y, x, color)
+            else:
+                self.point(x, y, color)
+            
+            offset += dy * 2
+            if offset >= threshold:
+                y += 1 if y0 < y1 else -1
+                threshold += dx * 2
+        
     
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
     def glFinish(self, filename):
