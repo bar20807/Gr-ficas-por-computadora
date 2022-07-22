@@ -1,29 +1,35 @@
 from ast import Pass
 
 from sympy import false, true
-from GL_library import Render, color
+from GL_library import Render, color,V
+
+# 13,20,80,40
 
 def SR1(x,y,r,g,b):
 
     #INSTANCIAS DE MI RENDER
 
-    MyRender = Render(1000,1000)
-    MyRender.glClearColor(0.49, 0.49, 0.49)
+    MyRender = Render(500,500)
+    MyRender.glViewport(int(500/4), int(500/4), int(500/2), int(500/2))
+    MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()
-    MyRender.glclearViewPort(color(0, 0, 0))
-    MyRender.glVertex(x, y, color(r, g, b))
+    MyRender.glClearViewport(color(0, 0, 0))
+    MyRender.glVertex(x,y,color(r,g,b))
     MyRender.glFinish('b.bmp')
 
 def SR2(x0,y0,x1,y1):
     
+    V0=V(x0,y0)
+    V1=V(x1,y1)
+    
     #INSTANCIAS DE MI RENDER LÍNEA
-    
     MyRender = Render(500,500)
+    MyRender.glViewport(int(500/4), int(500/4), int(500/2), int(500/2))
+    MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()
-    MyRender.glclearViewPort(color(0, 0, 0))
-    MyRender.glLine(x0,y0,x1,y1,color(1,0,0))
+    MyRender.glClearViewport(color(0, 0, 0))
+    MyRender.glLine(V0,V1,color(1,0,0))
     MyRender.glFinish('line.bmp')
-    
 
 iterador= false
 opciones= 0

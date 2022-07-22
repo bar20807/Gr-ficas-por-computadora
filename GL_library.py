@@ -7,6 +7,9 @@
 
 """
 import struct as st
+from collections import namedtuple
+
+V=namedtuple('V',['x','y'])
 
 def char(c):
     # 1 byte
@@ -33,94 +36,87 @@ WHITE = color(1,1,1)
 
 class Render(object):
     def __init__(self,width,height):
-        self.width=width
-        self.height=height
-        self.glclearColor = WHITE
-        self.currentcolor=BLACK
-        self.glClear()
-        self.glViewPort(int(self.width/4),int(self.height/4),int(self.width/2),int(self.height/2))
+        self.width = width
+        self.height = height
+        self.clearColor = color(0,0,0)
+        self.currColor = color(1,1,1)
+        self.pixels=[]
         self.glCreateWindow(self.width,self.height)
-        self.framebuffer=[]
-           
+        self.glViewport(0,0,self.width, self.height)
+        self.glClear()
+    
     def glCreateWindow(self,width,height):
         self.width=width
         self.height=height
-        self.glClear()
-    
-    def glViewPort(self,x,y,width,height):
-        self.vpx=x
-        self.vpy=y
-        self.vpwidth=width
-        self.vpheight=height
-    
-    """
-        EJEMPLO SACADO DE:
-        https://stackoverflow.com/questions/15693231/normalized-device-coordinates
         
-        s_x * X_NDC + d_x = X_pixel
-        s_y * Y_NDC + d_y = Y_pixel
-        
-        s_x = ( N_x - epsilon ) / 2
-        d_x = ( N_x - epsilon ) / 2
 
-        s_y = ( N_y - epsilon ) / (-2*a)
-        d_y = ( N_y - epsilon ) / 2
+    def glViewport(self, posX, posY, width, height):
+        self.vpX = posX
+        self.vpY = posY
+        self.vpWidth = width
+        self.vpHeight = height
 
-        epsilon = .001
-        a = N_y/N_x  (physical screen aspect ratio)
-            
-    """
-    """
-        ÁREA DE DIBUJO DE CADA UNA DE LAS VENTANAS, VIEWPORT, WINDOW Y EL PUNTO FINAL
-    
-    """
-    def glclearViewPort(self,Color=None):
-        for i in range(self.vpx, self.vpx + self.vpwidth):
-            for j in range(self.vpy, self.vpy + self.vpheight):
-                self.point(i, j, Color)
-        
-    
-    def glVertex(self, x, y, Color=None):
-        if x > 0.9999 or x < -0.9999 or y > 0.9999 or y < -0.9999:
-            print('Fuera del rango del ViewPort')
-        else:
-            x = (x + 1) * (self.vpwidth/2) + self.vpx
-            y = (y + 1) * (self.vpheight/2) + self.vpy
+    def glClearColor(self, r, g, b):
+        self.clearColor = color(r,g,b)
 
-            x = int(x)
-            y = int(y)
-            
-            self.point(x, y, Color)
-    
-    #FUNCIONES PARA AGREGAR EL COLOR DE FONDO
-    
-    def color(self,r,g,b):
-        self.currentcolor=color(r,g,b)
-        
+    def glColor(self, r, g, b):
+        self.currColor = color(r,g,b)
+
     def glClear(self):
-        self.framebuffer = [
-            [self.glclearColor for x in range (self.width)]
-            for y in range (self.height)
-                            ]
-    #Agregar fondo a la ventana que se está creando
-    def glClearColor(self,r,g,b):
-        self.glclearColor = color(r,g,b)
-    
-    def point(self,x,y,Color=None):
+        self.pixels = [[ self.clearColor for y in range(self.height)]
+                       for x in range(self.width)]
+
+    def glClearViewport(self, clr = None):
+        for x in range(self.vpX, self.vpX + self.vpWidth):
+            for y in range(self.vpY, self.vpY + self.vpHeight):
+                self.glPoint(x,y,clr)
+
+
+    def glPoint(self, x, y, clr = None): # Window Coordinates
         if (0 <= x < self.width) and (0 <= y < self.height):
-            self.framebuffer[x][y] = Color or self.currentcolor
-    
-    #Función para realizar una línea
-    def glLine(self, x0,y0, x1,y1, color = None):
-           
+            self.pixels[x][y] = clr or self.currColor
+
+    def glVertex(self, ndcX, ndcY, clr = None): # NDC
+        if ndcX < -1 or ndcX > 1 or ndcY < -1 or ndcY > 1:
+            return
+
+        x = (ndcX + 1) * (self.vpWidth / 2) + self.vpX
+        y = (ndcY + 1) * (self.vpHeight / 2) + self.vpY
+
+        x = int(x)
+        y = int(y)
+
+        self.glPoint(x,y,clr)
+
+
+    def glLine(self, v0, v1, clr = None):
+        # Bresenham line algorithm
+        # y = m * x + b
+        x0 = int(v0.x)
+        x1 = int(v1.x)
+        y0 = int(v0.y)
+        y1 = int(v1.y)
+
+        # Si el punto0 es igual al punto 1, dibujar solamente un punto
+        if x0 == x1 and y0 == y1:
+            self.glPoint(x0,y0,clr)
+            return
+
         dy = abs(y1 - y0)
         dx = abs(x1 - x0)
+
         steep = dy > dx
 
+        # Si la linea tiene pendiente mayor a 1 o menor a -1
+        # intercambio las x por las y, y se dibuja la linea
+        # de manera vertical
         if steep:
             x0, y0 = y0, x0
             x1, y1 = y1, x1
 
+        # Si el punto inicial X es mayor que el punto final X,
+        # intercambio los puntos para siempre dibujar de 
+        # izquierda a derecha       
         if x0 > x1:
             x0, x1 = x1, x0
             y0, y1 = y1, y0
@@ -129,19 +125,27 @@ class Render(object):
         dx = abs(x1 - x0)
 
         offset = 0
-        threshold = dx
+        limit = 0.5
+        m = dy / dx
+        y = y0
 
-        y = int(y0)
-        for x in range(int(x0), int(x1 + 1)):
+        for x in range(x0, x1 + 1):
             if steep:
-                self.point(y, x, color)
+                # Dibujar de manera vertical
+                self.glPoint(y, x, clr)
             else:
-                self.point(x, y, color)
-            
-            offset += dy * 2
-            if offset >= threshold:
-                y += 1 if y0 < y1 else -1
-                threshold += dx * 2
+                # Dibujar de manera horizontal
+                self.glPoint(x, y, clr)
+
+            offset += m
+
+            if offset >= limit:
+                if y0 < y1:
+                    y += 1
+                else:
+                    y -= 1
+                
+                limit += 1
         
     
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
@@ -173,7 +177,7 @@ class Render(object):
         
         for x in range(self.height):
             for y in range(self.width):
-                f.write(self.framebuffer[x][y])
+                f.write(self.pixels[x][y])
                 
         f.close()
      
