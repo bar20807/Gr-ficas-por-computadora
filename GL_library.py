@@ -38,8 +38,8 @@ class Render(object):
     def __init__(self,width,height):
         self.width = width
         self.height = height
-        self.clearColor = color(0,0,0)
-        self.currColor = color(1,1,1)
+        self.clearColor = BLACK
+        self.currColor = WHITE
         self.pixels=[]
         self.glCreateWindow(self.width,self.height)
         self.glViewport(0,0,self.width, self.height)
@@ -76,34 +76,39 @@ class Render(object):
         if (0 <= x < self.width) and (0 <= y < self.height):
             self.pixels[x][y] = clr or self.currColor
 
-    def glVertex(self, ndcX, ndcY, clr = None): # NDC
-        if ndcX < -1 or ndcX > 1 or ndcY < -1 or ndcY > 1:
-            return
+    def glVertex(self, x, y, clr = None): # NDC
+        if x > 1 or x < -1 or y > 1 or y < -1:
+            print('Fuera del rango del ViewPort')
+        else:
+            x = (x + 1) * (self.vpWidth/2) + self.vpX
+            y = (y + 1) * (self.vpHeight/2) + self.vpY
 
-        x = (ndcX + 1) * (self.vpWidth / 2) + self.vpX
-        y = (ndcY + 1) * (self.vpHeight / 2) + self.vpY
-
-        x = int(x)
-        y = int(y)
-
-        self.glPoint(x,y,clr)
-
-
+            x = int(x)
+            y = int(y)
+            
+            self.glPoint(x, y, clr)
+                
+    
     def glLine(self, v0, v1, clr = None):
         # Bresenham line algorithm
         # y = m * x + b
-        x0 = int(v0.x)
-        x1 = int(v1.x)
-        y0 = int(v0.y)
-        y1 = int(v1.y)
-
-        # Si el punto0 es igual al punto 1, dibujar solamente un punto
-        if x0 == x1 and y0 == y1:
-            self.glPoint(x0,y0,clr)
-            return
-
-        dy = abs(y1 - y0)
-        dx = abs(x1 - x0)
+        x0 = v0.x
+        x1 = v1.x
+        y0 = v0.y
+        y1 = v1.y
+        
+        #Cálculo del Viewport
+        mx0 = round((x0 + 1) * (self.vpWidth/2) + self.vpX)
+        my0 = round((y0 + 1) * (self.vpHeight/2) + self.vpY)
+        mx1 = round((x1 + 1) * (self.vpWidth/2) + self.vpX)
+        my1 = round((y1 + 1) * (self.vpWidth/2) + self.vpY)
+        
+        
+        print("VALORES ANTES DEL FOR mx0: " + str(mx0) + "\nmx1: " + str(mx1))
+        print("VALORES ANTES DEL FOR my0: " + str(my0) + "\nmy1: " + str(my1))
+        
+        dy = abs(my1 - my0)
+        dx = abs(mx1 - mx0)
 
         steep = dy > dx
 
@@ -111,41 +116,35 @@ class Render(object):
         # intercambio las x por las y, y se dibuja la linea
         # de manera vertical
         if steep:
-            x0, y0 = y0, x0
-            x1, y1 = y1, x1
+            mx0, my0 = my0, mx0
+            mx1, my1 = my1, mx1
 
         # Si el punto inicial X es mayor que el punto final X,
         # intercambio los puntos para siempre dibujar de 
         # izquierda a derecha       
-        if x0 > x1:
-            x0, x1 = x1, x0
-            y0, y1 = y1, y0
+        if mx0 > mx1:
+            mx0, mx1 = mx1, mx0
+            my0, my1 = my1, my0
 
-        dy = abs(y1 - y0)
-        dx = abs(x1 - x0)
-
+        dy = abs(my1 - my0)
+        dx = abs(mx1 - mx0)
         offset = 0
-        limit = 0.5
-        m = dy / dx
-        y = y0
-
-        for x in range(x0, x1 + 1):
+        threshold = dx
+        y = my0
+    
+        for x in range(mx0,mx1):
+            offset+=dy*2
+            if offset>=threshold:
+                y +=1 if my0 < my1 else -1
+                threshold+=dx*2
+                #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
             if steep:
-                # Dibujar de manera vertical
-                self.glPoint(y, x, clr)
+                #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
+                self.glPoint(y,x,clr) 
             else:
-                # Dibujar de manera horizontal
-                self.glPoint(x, y, clr)
-
-            offset += m
-
-            if offset >= limit:
-                if y0 < y1:
-                    y += 1
-                else:
-                    y -= 1
-                
-                limit += 1
+                #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
+                #print("Esta es X ANTES DE SER ENVIADA AL VERTEX: " + str(x) )
+                self.glPoint(x,y,clr)
         
     
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
