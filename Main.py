@@ -31,6 +31,10 @@ def SR2(x0,y0,x1,y1):
     MyRender.glLine(V0,V1,color(1,0,0))
     MyRender.glFinish('line.bmp')
 
+def DrawHouse():
+    pass
+    
+
 iterador= false
 opciones= 0
 
