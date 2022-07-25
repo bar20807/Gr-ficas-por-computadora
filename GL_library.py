@@ -90,6 +90,7 @@ class Render(object):
                 
     
     def glLine(self, v0, v1, clr = None):
+        
         # Bresenham line algorithm
         # y = m * x + b
         x0 = v0.x
@@ -105,49 +106,49 @@ class Render(object):
             my0 = int((y0 + 1) * (self.vpHeight/2) + self.vpY)
             mx1 = int((x1 + 1) * (self.vpWidth/2) + self.vpX)
             my1 = int((y1 + 1) * (self.vpWidth/2) + self.vpY)
-        
-        
-        print("VALORES ANTES DEL FOR mx0: " + str(mx0) + "\nmx1: " + str(mx1))
-        print("VALORES ANTES DEL FOR my0: " + str(my0) + "\nmy1: " + str(my1))
-        
-        dy = abs(my1 - my0)
-        dx = abs(mx1 - mx0)
+            
+            
+            print("VALORES ANTES DEL FOR mx0: " + str(mx0) + "\nmx1: " + str(mx1))
+            print("VALORES ANTES DEL FOR my0: " + str(my0) + "\nmy1: " + str(my1))
+            
+            dy = abs(my1 - my0)
+            dx = abs(mx1 - mx0)
 
-        steep = dy > dx
+            steep = dy > dx
 
-        # Si la linea tiene pendiente mayor a 1 o menor a -1
-        # intercambio las x por las y, y se dibuja la linea
-        # de manera vertical
-        if steep:
-            mx0, my0 = my0, mx0
-            mx1, my1 = my1, mx1
-
-        # Si el punto inicial X es mayor que el punto final X,
-        # intercambio los puntos para siempre dibujar de 
-        # izquierda a derecha       
-        if mx0 > mx1:
-            mx0, mx1 = mx1, mx0
-            my0, my1 = my1, my0
-
-        dy = abs(my1 - my0)
-        dx = abs(mx1 - mx0)
-        offset = 0
-        threshold = dx
-        y = my0
-    
-        for x in range(mx0,mx1):
-            offset+=dy*2
-            if offset>=threshold:
-                y +=1 if my0 < my1 else -1
-                threshold+=dx*2
-                #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
+            # Si la linea tiene pendiente mayor a 1 o menor a -1
+            # intercambio las x por las y, y se dibuja la linea
+            # de manera vertical
             if steep:
-                #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
-                self.glPoint(y,x,clr) 
-            else:
-                #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
-                #print("Esta es X ANTES DE SER ENVIADA AL VERTEX: " + str(x) )
-                self.glPoint(x,y,clr)
+                mx0, my0 = my0, mx0
+                mx1, my1 = my1, mx1
+
+            # Si el punto inicial X es mayor que el punto final X,
+            # intercambio los puntos para siempre dibujar de 
+            # izquierda a derecha       
+            if mx0 > mx1:
+                mx0, mx1 = mx1, mx0
+                my0, my1 = my1, my0
+
+            dy = abs(my1 - my0)
+            dx = abs(mx1 - mx0)
+            offset = 0
+            threshold = dx
+            y = my0
+        
+            for x in range(mx0,mx1):
+                offset+=dy*2
+                if offset>=threshold:
+                    y +=1 if my0 < my1 else -1
+                    threshold+=dx*2
+                    #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
+                if steep:
+                    #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
+                    self.glPoint(y,x,clr) 
+                else:
+                    #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
+                    #print("Esta es X ANTES DE SER ENVIADA AL VERTEX: " + str(x) )
+                    self.glPoint(x,y,clr)
         
     
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
