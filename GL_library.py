@@ -97,11 +97,14 @@ class Render(object):
         y0 = v0.y
         y1 = v1.y
         
-        #Cálculo del Viewport
-        mx0 = round((x0 + 1) * (self.vpWidth/2) + self.vpX)
-        my0 = round((y0 + 1) * (self.vpHeight/2) + self.vpY)
-        mx1 = round((x1 + 1) * (self.vpWidth/2) + self.vpX)
-        my1 = round((y1 + 1) * (self.vpWidth/2) + self.vpY)
+        if x0>1 or x0<-1 or x1>1 or x1<-1 or y0>1 or y0<-1 or y1>1 or y1<-1:
+            print('Fuera del rango del ViewPort')
+        else:
+            #Cálculo del Viewport
+            mx0 = int((x0 + 1) * (self.vpWidth/2) + self.vpX)
+            my0 = int((y0 + 1) * (self.vpHeight/2) + self.vpY)
+            mx1 = int((x1 + 1) * (self.vpWidth/2) + self.vpX)
+            my1 = int((y1 + 1) * (self.vpWidth/2) + self.vpY)
         
         
         print("VALORES ANTES DEL FOR mx0: " + str(mx0) + "\nmx1: " + str(mx1))

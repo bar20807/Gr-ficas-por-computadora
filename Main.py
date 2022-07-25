@@ -24,7 +24,7 @@ def SR2(x0,y0,x1,y1):
     
     #INSTANCIAS DE MI RENDER LÍNEA
     MyRender = Render(500,500)
-    MyRender.glViewport(int(500/4), int(500/4), int(500/2), int(500/2))
+    MyRender.glViewport(0, 0, 500, 500)
     MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()
     MyRender.glClearViewport(color(0, 0, 0))
