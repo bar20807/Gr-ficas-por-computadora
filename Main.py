@@ -32,7 +32,14 @@ def SR2(x0,y0,x1,y1):
     MyRender.glFinish('line.bmp')
 
 def DrawHouse():
-    pass
+    
+    MyRender = Render(500,500)
+    MyRender.glViewport(0,0,500,500)
+    MyRender.glClearColor(0.5,0.5,0.5)
+    MyRender.glClear()
+    MyRender.glClearViewport(color(0,0,0))
+    
+    #VECTORES PARA DIBUJAR LA CASA
     
 
 iterador= false
