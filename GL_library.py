@@ -10,6 +10,9 @@ import struct as st
 from collections import namedtuple
 
 V=namedtuple('V',['x','y'])
+V1C=namedtuple('V1C',['x','y'])
+V2C=namedtuple('V2C',['x','y'])
+V3C=namedtuple('V3C',['x','y'])
 
 def char(c):
     # 1 byte

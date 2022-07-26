@@ -32,15 +32,35 @@ def SR2(x0,y0,x1,y1):
     MyRender.glFinish('line.bmp')
 
 def DrawHouse():
+     
+    #VECTORES PARA DIBUJAR LA CASA
+    #V0=V(0.3,-0.5)
+    #V1=V(0.3,-0.1)
     
+    #INSTANCIAS
     MyRender = Render(500,500)
     MyRender.glViewport(0,0,500,500)
     MyRender.glClearColor(0.5,0.5,0.5)
     MyRender.glClear()
     MyRender.glClearViewport(color(0,0,0))
     
-    #VECTORES PARA DIBUJAR LA CASA
+    #PRIMERA PARED
+    MyRender.glLine(V(0.2,-0.4),V(0.2,-0.05),color(1,0,0)) #LÍNEA 1 DEL CUADRADO
+    MyRender.glLine(V(0.6,-0.4),V(0.6,-0.05),color(1,0,0)) #LÍNEA 2 BAJA DEL CUADRADO
+    MyRender.glLine(V(0.2,-0.4),V(0.6,-0.4),color(1,0,0))  #LÍNEA 3 IZQUIERDA DEL CUADRADO
+    MyRender.glLine(V(0.2,-0.05),V(0.6,-0.05),color(1,0,0)) #LÍNEA 4 DERECHA DEL CUADRADO
     
+    #TECHO DE LA PARED
+    MyRender.glLine(V(0.6,-0.4),V(0.8,-0.2),color(1,1,0))
+    MyRender.glLine(V(0.6,-0.05),V(0.8,-0.2),color(0,1,0))
+    
+    #SEGUNDA PARED (FRONTAL)
+    
+    
+    
+    
+    
+    MyRender.glFinish('house.bmp')
 
 iterador= false
 opciones= 0
@@ -48,7 +68,7 @@ opciones= 0
 while not iterador:
     
     print("-+-+-+-+-+-+-+-+-+-+-+-+-+ BIENVENIDO A MI RENDER -+-+-+-+-+-+-+-+-+-+-+-+-+")
-    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Salir ")
+    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Dibujar una casa utilizando glLine \n 4) Salir ")
     opciones= int(input("\n Elige una de las siguientes opciones: "))
     
     
@@ -75,8 +95,12 @@ while not iterador:
             SR2(x0,y0,x1,y1)
             
         elif opciones == 3:
-            iterador = true
-            print("Gracias por usar mi render.")
+            DrawHouse()
+        
+        elif opciones==4:
+            iterador=true
+            print("Gracias por usar mi renderer")
+            
             
     except Exception as e:
         print( e + "\nUsted ingresó un carecter no válido... Intente de nuevo")
