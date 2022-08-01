@@ -95,15 +95,15 @@ def DrawPolligons():
     
 
 def Read_Objects():
-    MyRender = Render(500,500)
-    scale=(2,2)
-    translate=(150,150)
-    MyRender.glViewport(0, 0, 500, 500)
+    MyRender = Render(1024,1024)
+    scale=(5,5)
+    translate=(512,512)
+    MyRender.glViewport(0, 0, 1024, 1024)
     MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()
     MyRender.glClearViewport(color(0, 0, 0))
-    MyRender.transform_vertex('cube.obj',translate,scale)
-    MyRender.glFinish('cube.bmp')
+    MyRender.display_obj('spidey.obj',translate,scale,color(1,0,0))
+    MyRender.glFinish('spidey.bmp')
     
 
 iterador= false

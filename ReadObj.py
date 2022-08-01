@@ -6,19 +6,42 @@ class ReadObj(object):
         self.faces=[]
         
         for line in self.lines:
-            if not line:
+            if not line or line.startswith('#'):
                 continue
                 
             prefix, value=line.split(' ', 1)
             
+            #Ver que valores devuelve la lectura del archivo.
+            #print("Value: ",value)
+            
             if prefix == 'v':
                 self.vertices.append(
                     list(
-                        map(float,value.split(' '))
+                    map(
+                        float, value.strip().split(' ')
                         )
                     )
-            elif prefix == 'f':
-                self.faces.append([
-                    list(map(int ,face.split('/'))) 
-                    for face in value.split(' ')
-                                  ])
+                )
+            if prefix == 'f':
+                try: 
+                    self.faces.append(
+                        [
+                            list(
+                                map(int, face.strip().split('/') 
+                                )
+                            ) 
+                            for face in value.strip().split(' ') 
+                        ]
+                    )
+                except:
+                    self.faces.append(
+                        [
+                            list(
+                                map(int, face.strip().split('//')
+                                )
+                            ) 
+                            for face in value.strip().split(' ') 
+                        ]
+                    )
+ReadObj('spidey.obj')
+                

@@ -155,19 +155,13 @@ class Render(object):
                     threshold+=dx*2
                     #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
     
-    def transform_vertex(self, Vertex, translate, scale):
-        return[
-            (Vertex[0]*scale[0]) + translate[0],
-            (Vertex[1]*scale[1]) + translate[1]
-        ]
-    
     def line(self,v0,v1,clr=None):
         # Bresenham line algorithm
         # y = m * x + b
-        x0 = v0.x
-        x1 = v1.x
-        y0 = v0.y
-        y1 = v1.y
+        x0 = round(v0.x)
+        x1 = round(v1.x)
+        y0 = round(v0.y)
+        y1 = round(v1.y)
         
         dy = abs(y1 - y0)
         dx = abs(x1 - x0)
@@ -207,6 +201,54 @@ class Render(object):
                 y +=1 if y0 < y1 else -1
                 threshold+=dx*2
                 #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
+    
+    def transform_vertex(self, Vertex, translate, scale):
+        return[
+            (Vertex[0]*scale[0]) + translate[0],
+            (Vertex[1]*scale[1]) + translate[1]
+        ]
+        
+    def display_obj(self,filename,translate,scale,clr=None):
+        dibujo = ReadObj(filename)
+        for face in dibujo.faces:
+            #Verificamos si es un cuadrado
+            if len(face) == 4:
+                
+                f1=face[0][0]-1
+                f2=face[1][0]-1
+                f3=face[2][0]-1
+                f4=face[3][0]-1
+
+                #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
+                v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
+                v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
+                v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
+                v_4 = self.transform_vertex(dibujo.vertices[f4],translate,scale)
+                
+                #Recorremos los vertices en Line
+                self.line(V(v_1[0],v_1[1]),V(v_2[0],v_2[1]),clr)
+                self.line(V(v_2[0],v_2[1]),V(v_3[0],v_3[1]),clr)
+                self.line(V(v_3[0],v_3[1]),V(v_4[0],v_4[1]),clr)
+                self.line(V(v_4[0],v_4[1]),V(v_1[0],v_1[1]),clr)
+                
+            #Verificamos si las caras son un triangulo
+            elif len(face) == 3 :
+                f1=face[0][0]-1
+                f2=face[1][0]-1
+                f3=face[2][0]-1
+
+                #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
+                v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
+                v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
+                v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
+                
+                #Recorremos los vertices en Line
+                self.line(V(v_1[0],v_1[1]),V(v_2[0],v_2[1]),clr)
+                self.line(V(v_2[0],v_2[1]),V(v_3[0],v_3[1]),clr)
+                self.line(V(v_3[0],v_3[1]),V(v_1[0],v_1[1]),clr)
+                
+                
+            
                 
     # Funcion to check if the point is within the polygon
     def pointInside(self, x, y, poligono):
