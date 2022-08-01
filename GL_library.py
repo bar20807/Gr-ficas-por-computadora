@@ -8,6 +8,7 @@
 """
 import struct as st
 from collections import namedtuple
+from tkinter import Scale
 from ReadObj import ReadObj
 
 V=namedtuple('V',['x','y'])
@@ -154,28 +155,11 @@ class Render(object):
                     threshold+=dx*2
                     #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
     
-    def transform_vertex(self, filename, translate, scale):
-        model = ReadObj(filename)
-    
-        for face in model.faces:
-            vcount = len(face)
-
-        for j in range(vcount):
-            f1 = face[j][0]
-            f2 = face[(j + 1) % vcount][0]
-
-            v1 = model.vertices[f1 - 1]
-            v2 = model.vertices[f2 - 1]
-            
-            x1 = round((v1[0] + translate[0]) * scale[0])
-            y1 = round((v1[1] + translate[1]) * scale[1])
-            x2 = round((v2[0] + translate[0]) * scale[0])
-            y2 = round((v2[1] + translate[1]) * scale[1])
-            
-            V0=V(x1,y1)
-            V1=V(x2,y2)
-
-            self.line(V0, V1)
+    def transform_vertex(self, Vertex, translate, scale):
+        return[
+            (Vertex[0]*scale[0]) + translate[0],
+            (Vertex[1]*scale[1]) + translate[1]
+        ]
     
     def line(self,v0,v1,clr=None):
         # Bresenham line algorithm
@@ -223,6 +207,7 @@ class Render(object):
                 y +=1 if y0 < y1 else -1
                 threshold+=dx*2
                 #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
+                
     # Funcion to check if the point is within the polygon
     def pointInside(self, x, y, poligono):
         isInside = False
