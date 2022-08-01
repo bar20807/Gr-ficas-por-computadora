@@ -8,6 +8,7 @@
 """
 import struct as st
 from collections import namedtuple
+from ReadObj import ReadObj
 
 V=namedtuple('V',['x','y'])
 V1C=namedtuple('V1C',['x','y'])
@@ -139,12 +140,7 @@ class Render(object):
             threshold = dx
             y = my0
         
-            for x in range(mx0,mx1):
-                offset+=dy*2
-                if offset>=threshold:
-                    y +=1 if my0 < my1 else -1
-                    threshold+=dx*2
-                    #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
+            for x in range(mx0,mx1 + 1):
                 if steep:
                     #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
                     self.glPoint(y,x,clr) 
@@ -152,6 +148,113 @@ class Render(object):
                     #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
                     #print("Esta es X ANTES DE SER ENVIADA AL VERTEX: " + str(x) )
                     self.glPoint(x,y,clr)
+                offset+=dy*2
+                if offset>=threshold:
+                    y +=1 if my0 < my1 else -1
+                    threshold+=dx*2
+                    #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
+    
+    def transform_vertex(self, filename, translate, scale):
+        model = ReadObj(filename)
+    
+        for face in model.faces:
+            vcount = len(face)
+
+        for j in range(vcount):
+            f1 = face[j][0]
+            f2 = face[(j + 1) % vcount][0]
+
+            v1 = model.vertices[f1 - 1]
+            v2 = model.vertices[f2 - 1]
+            
+            x1 = round((v1[0] + translate[0]) * scale[0])
+            y1 = round((v1[1] + translate[1]) * scale[1])
+            x2 = round((v2[0] + translate[0]) * scale[0])
+            y2 = round((v2[1] + translate[1]) * scale[1])
+            
+            V0=V(x1,y1)
+            V1=V(x2,y2)
+
+            self.line(V0, V1)
+    
+    def line(self,v0,v1,clr=None):
+        # Bresenham line algorithm
+        # y = m * x + b
+        x0 = v0.x
+        x1 = v1.x
+        y0 = v0.y
+        y1 = v1.y
+        
+        dy = abs(y1 - y0)
+        dx = abs(x1 - x0)
+
+        steep = dy > dx
+
+        # Si la linea tiene pendiente mayor a 1 o menor a -1
+        # intercambio las x por las y, y se dibuja la linea
+        # de manera vertical
+        if steep:
+            x0, y0 = y0, x0
+            x1, y1 = y1, x1
+
+        # Si el punto inicial X es mayor que el punto final X,
+        # intercambio los puntos para siempre dibujar de 
+        # izquierda a derecha       
+        if x0 > x1:
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+
+        dy = abs(y1 - y0)
+        dx = x1 - x0
+        offset = 0
+        threshold = dx
+        y = y0
+        
+        for x in range(x0,x1 + 1):
+            if steep:
+                #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
+                self.glPoint(y,x,clr) 
+            else:
+                #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
+                #print("Esta es X ANTES DE SER ENVIADA AL VERTEX: " + str(x) )
+                self.glPoint(x,y,clr)
+            offset+=dy*2
+            if offset>=threshold:
+                y +=1 if y0 < y1 else -1
+                threshold+=dx*2
+                #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
+    # Funcion to check if the point is within the polygon
+    def pointInside(self, x, y, poligono):
+        isInside = False
+        n = len(poligono)
+        x0, y0 = poligono[0]
+        for j in range(n+1):
+            x2, y2 = poligono[j % n]
+            if y > min(y0, y2):
+                if y <= max(y0, y2):
+                    if x <= max(x0, x2):
+                        if y0 is not y2:
+                            inX = (y-y0)*(x2-x0)/(y2-y0)+x0
+                        if x0 == x2 or x <= inX:
+                            isInside = not isInside
+            x0, y0 = x2, y2
+        return isInside
+    # Function to fill any polygon
+    def scanFillpoly(self, poligono, clr=None):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.pointInside(x, y, poligono):
+                    self.glPoint(x, y, clr) or color(1, 0, 0)
+
+    # Funtion to draw a poligon
+    def drawPolygon(self, polygon, clr=None):
+        for i in range(100):
+            for idx, (x, y) in enumerate(polygon):
+                polygon[idx] = V(x, y)
+
+        for i in range(len(polygon)):
+            self.line(polygon[i], polygon[(i - 1) %
+                        len(polygon)], clr)    
         
     
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO

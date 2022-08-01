@@ -1,4 +1,5 @@
 from ast import Pass
+from fnmatch import translate
 
 from sympy import false, true
 from GL_library import Render, color,V
@@ -54,13 +55,56 @@ def DrawHouse():
     MyRender.glLine(V(0.6,-0.4),V(0.8,-0.2),color(1,1,0))
     MyRender.glLine(V(0.6,-0.05),V(0.8,-0.2),color(0,1,0))
     
-    #SEGUNDA PARED (FRONTAL)
-    
-    
-    
-    
-    
+    #SEGUNDA PARED (FRONTAL)    
     MyRender.glFinish('house.bmp')
+
+def DrawPolligons():
+    MyRender = Render(1000,1000)
+    MyRender.glViewport(0,0,1000,1000)
+    MyRender.glClearColor(0.5,0.5,0.5)
+    MyRender.glClear()
+    MyRender.glClearViewport(color(0,0,0))
+    
+    star = [(165, 380), (185, 360), (180, 330), (207, 345), (233, 330),
+        (230, 360), (250, 380), (220, 385), (205, 410), (193, 383)]
+
+    square = [(321, 335), (288, 286), (339, 251), (374, 302)]
+
+    triangle = [(377, 249), (411, 197), (436, 249)]
+
+    pol4 = [(413, 177), (448, 159), (502, 88),
+            (553, 53), (535, 36), (676, 37), (660, 52),
+            (750, 145), (761, 179), (672, 192), (659, 214),
+            (615, 214), (632, 230), (580, 230),
+            (597, 215), (552, 214), (517, 144), (466, 180)]
+
+    pol5 = [(682, 175), (708, 120), (735, 148), (739, 170)]
+
+    MyRender.drawPolygon(star, color(1,1,1))
+    MyRender.scanFillpoly(star, color(1,0,0))
+    MyRender.drawPolygon(square, color(0.99,0.99,0.6))
+    MyRender.scanFillpoly(square, color(0.99,0.99,0.6))
+    MyRender.drawPolygon(triangle, color(0,0.6,0))
+    MyRender.scanFillpoly(triangle, color(0,0.6,0))
+    MyRender.drawPolygon(pol4, color(1,1,1))
+    MyRender.scanFillpoly(pol4, color(1,1,1))
+    MyRender.drawPolygon(pol5, color(1,0,0))
+    MyRender.scanFillpoly(pol5, color(1,0,0))
+    
+    MyRender.glFinish("Poligonos.bmp")
+    
+
+def Read_Objects():
+    MyRender = Render(500,500)
+    scale=(5,5)
+    translate=(150,150)
+    MyRender.glViewport(0, 0, 500, 500)
+    MyRender.glClearColor(0.5, 0.5, 0.5)
+    MyRender.glClear()
+    MyRender.glClearViewport(color(0, 0, 0))
+    MyRender.transform_vertex('spidey.obj',translate,scale)
+    MyRender.glFinish('spidey.bmp')
+    
 
 iterador= false
 opciones= 0
@@ -68,7 +112,7 @@ opciones= 0
 while not iterador:
     
     print("-+-+-+-+-+-+-+-+-+-+-+-+-+ BIENVENIDO A MI RENDER -+-+-+-+-+-+-+-+-+-+-+-+-+")
-    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Dibujar una casa utilizando glLine \n 4) Salir ")
+    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Dibujar una casa utilizando glLine \n 4) Dibujar poligonos \n 5) Renderizar un modelo \n 6) Salir")
     opciones= int(input("\n Elige una de las siguientes opciones: "))
     
     
@@ -98,8 +142,14 @@ while not iterador:
             DrawHouse()
         
         elif opciones==4:
+            DrawPolligons()
+        
+        elif opciones==5:
+            Read_Objects()
+        elif opciones==6:
             iterador=true
             print("Gracias por usar mi renderer")
+            
             
             
     except Exception as e:
