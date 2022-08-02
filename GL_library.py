@@ -191,11 +191,11 @@ class Render(object):
         for x in range(x0,x1 + 1):
             if steep:
                 #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
-                self.glPoint(x,y,clr) 
+                self.glPoint(y,x,clr) 
             else:
                 #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
                 #print("Esta es X ANTES DE SER ENVIADA AL VERTEX: " + str(x) )
-                self.glPoint(y,x,clr)
+                self.glPoint(x,y,clr)
             offset+=dy*2
             if offset>=threshold:
                 y +=1 if y0 < y1 else -1
