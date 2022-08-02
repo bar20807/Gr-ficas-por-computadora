@@ -191,11 +191,11 @@ class Render(object):
         for x in range(x0,x1 + 1):
             if steep:
                 #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
-                self.glPoint(y,x,clr) 
+                self.glPoint(x,y,clr) 
             else:
                 #print("SOY my0 ANTES DE SER ENVIADA AL VERTEX: " + str(my0))
                 #print("Esta es X ANTES DE SER ENVIADA AL VERTEX: " + str(x) )
-                self.glPoint(x,y,clr)
+                self.glPoint(y,x,clr)
             offset+=dy*2
             if offset>=threshold:
                 y +=1 if y0 < y1 else -1
@@ -250,7 +250,7 @@ class Render(object):
                 
             
                 
-    # Funcion to check if the point is within the polygon
+    # Función que revisa si hay algún punto en un poligono
     def pointInside(self, x, y, poligono):
         isInside = False
         n = len(poligono)
@@ -266,14 +266,14 @@ class Render(object):
                             isInside = not isInside
             x0, y0 = x2, y2
         return isInside
-    # Function to fill any polygon
+    # Función que llena un poligono
     def scanFillpoly(self, poligono, clr=None):
         for x in range(self.width):
             for y in range(self.height):
                 if self.pointInside(x, y, poligono):
                     self.glPoint(x, y, clr) or color(1, 0, 0)
 
-    # Funtion to draw a poligon
+    # Función que dibuja un poligono
     def drawPolygon(self, polygon, clr=None):
         for i in range(100):
             for idx, (x, y) in enumerate(polygon):

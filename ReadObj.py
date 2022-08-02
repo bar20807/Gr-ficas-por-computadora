@@ -42,6 +42,4 @@ class ReadObj(object):
                             ) 
                             for face in value.strip().split(' ') 
                         ]
-                    )
-ReadObj('spidey.obj')
-                
+                    )                
