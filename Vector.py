@@ -1,6 +1,3 @@
-from re import X
-
-
 class Vector3(object):
     def __init__(self, x,y,z=0):
         self.x=x
