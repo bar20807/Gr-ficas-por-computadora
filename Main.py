@@ -47,14 +47,14 @@ def DrawHouse():
     MyRender.glClearViewport(color(0,0,0))
     
     #PRIMERA PARED
-    MyRender.glLine(V(0.2,-0.4),V(0.2,-0.05),color(1,0,0)) #LÍNEA 1 DEL CUADRADO
-    MyRender.glLine(V(0.6,-0.4),V(0.6,-0.05),color(1,0,0)) #LÍNEA 2 BAJA DEL CUADRADO
-    MyRender.glLine(V(0.2,-0.4),V(0.6,-0.4),color(1,0,0))  #LÍNEA 3 IZQUIERDA DEL CUADRADO
-    MyRender.glLine(V(0.2,-0.05),V(0.6,-0.05),color(1,0,0)) #LÍNEA 4 DERECHA DEL CUADRADO
+    MyRender.glLine(Vector3(0.2,-0.4),Vector3(0.2,-0.05),color(1,0,0)) #LÍNEA 1 DEL CUADRADO
+    MyRender.glLine(Vector3(0.6,-0.4),Vector3(0.6,-0.05),color(1,0,0)) #LÍNEA 2 BAJA DEL CUADRADO
+    MyRender.glLine(Vector3(0.2,-0.4),Vector3(0.6,-0.4),color(1,0,0))  #LÍNEA 3 IZQUIERDA DEL CUADRADO
+    MyRender.glLine(Vector3(0.2,-0.05),Vector3(0.6,-0.05),color(1,0,0)) #LÍNEA 4 DERECHA DEL CUADRADO
     
     #TECHO DE LA PARED
-    MyRender.glLine(V(0.6,-0.4),V(0.8,-0.2),color(1,1,0))
-    MyRender.glLine(V(0.6,-0.05),V(0.8,-0.2),color(0,1,0))
+    MyRender.glLine(Vector3(0.6,-0.4),Vector3(0.8,-0.2),color(1,1,0))
+    MyRender.glLine(Vector3(0.6,-0.05),Vector3(0.8,-0.2),color(0,1,0))
     
     #SEGUNDA PARED (FRONTAL)    
     MyRender.glFinish('house.bmp')
