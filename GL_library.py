@@ -9,8 +9,7 @@
 import struct as st
 from collections import namedtuple
 from ReadObj import ReadObj
-from Vector import Vector3
-
+from Vector import *
 
 V=namedtuple('V',['x','y'])
 
@@ -224,10 +223,10 @@ class Render(object):
                 v_4 = self.transform_vertex(dibujo.vertices[f4],translate,scale)
                 
                 #Recorremos los vertices en Line
-                self.line(V(v_1[0],v_1[1]),V(v_2[0],v_2[1]),clr)
-                self.line(V(v_2[0],v_2[1]),V(v_3[0],v_3[1]),clr)
-                self.line(V(v_3[0],v_3[1]),V(v_4[0],v_4[1]),clr)
-                self.line(V(v_4[0],v_4[1]),V(v_1[0],v_1[1]),clr)
+                self.line(Vector3(v_1[0],v_1[1]),Vector3(v_2[0],v_2[1]),clr)
+                self.line(Vector3(v_2[0],v_2[1]),Vector3(v_3[0],v_3[1]),clr)
+                self.line(Vector3(v_3[0],v_3[1]),Vector3(v_4[0],v_4[1]),clr)
+                self.line(Vector3(v_4[0],v_4[1]),Vector3(v_1[0],v_1[1]),clr)
                 
             #Verificamos si las caras son un triangulo
             elif len(face) == 3 :
@@ -241,9 +240,9 @@ class Render(object):
                 v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
                 
                 #Recorremos los vertices en Line
-                self.line(V(v_1[0],v_1[1]),V(v_2[0],v_2[1]),clr)
-                self.line(V(v_2[0],v_2[1]),V(v_3[0],v_3[1]),clr)
-                self.line(V(v_3[0],v_3[1]),V(v_1[0],v_1[1]),clr)
+                self.line(Vector3(v_1[0],v_1[1]),Vector3(v_2[0],v_2[1]),clr)
+                self.line(Vector3(v_2[0],v_2[1]),Vector3(v_3[0],v_3[1]),clr)
+                self.line(Vector3(v_3[0],v_3[1]),Vector3(v_1[0],v_1[1]),clr)
                 
                 
             
@@ -275,7 +274,7 @@ class Render(object):
     def drawPolygon(self, polygon, clr=None):
         for i in range(100):
             for idx, (x, y) in enumerate(polygon):
-                polygon[idx] = V(x, y)
+                polygon[idx] = V(x,y)
 
         for i in range(len(polygon)):
             self.line(polygon[i], polygon[(i - 1) %

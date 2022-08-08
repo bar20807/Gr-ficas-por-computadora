@@ -3,6 +3,7 @@ from fnmatch import translate
 
 from sympy import false, true
 from GL_library import Render, color,V
+from Vector import *
 
 # 13,20,80,40
 
@@ -20,8 +21,8 @@ def SR1(x,y,r,g,b):
 
 def SR2(x0,y0,x1,y1):
     
-    V0=V(x0,y0)
-    V1=V(x1,y1)
+    V0=Vector3(x0,y0)
+    V1=Vector3(x1,y1)
     
     #INSTANCIAS DE MI RENDER LÍNEA
     MyRender = Render(500,500)
