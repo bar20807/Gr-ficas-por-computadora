@@ -1,7 +1,3 @@
-from ast import Pass
-from fnmatch import translate
-
-from sympy import false, true
 from GL_library import Render, color,V
 from Vector import *
 
@@ -21,8 +17,8 @@ def SR1(x,y,r,g,b):
 
 def SR2(x0,y0,x1,y1):
     
-    V0=Vector3(x0,y0)
-    V1=Vector3(x1,y1)
+    V0=V3(x0,y0)
+    V1=V3(x1,y1)
     
     #INSTANCIAS DE MI RENDER LÍNEA
     MyRender = Render(500,500)
@@ -47,14 +43,14 @@ def DrawHouse():
     MyRender.glClearViewport(color(0,0,0))
     
     #PRIMERA PARED
-    MyRender.glLine(Vector3(0.2,-0.4),Vector3(0.2,-0.05),color(1,0,0)) #LÍNEA 1 DEL CUADRADO
-    MyRender.glLine(Vector3(0.6,-0.4),Vector3(0.6,-0.05),color(1,0,0)) #LÍNEA 2 BAJA DEL CUADRADO
-    MyRender.glLine(Vector3(0.2,-0.4),Vector3(0.6,-0.4),color(1,0,0))  #LÍNEA 3 IZQUIERDA DEL CUADRADO
-    MyRender.glLine(Vector3(0.2,-0.05),Vector3(0.6,-0.05),color(1,0,0)) #LÍNEA 4 DERECHA DEL CUADRADO
+    MyRender.glLine(V3(0.2,-0.4),V3(0.2,-0.05),color(1,0,0)) #LÍNEA 1 DEL CUADRADO
+    MyRender.glLine(V3(0.6,-0.4),V3(0.6,-0.05),color(1,0,0)) #LÍNEA 2 BAJA DEL CUADRADO
+    MyRender.glLine(V3(0.2,-0.4),V3(0.6,-0.4),color(1,0,0))  #LÍNEA 3 IZQUIERDA DEL CUADRADO
+    MyRender.glLine(V3(0.2,-0.05),V3(0.6,-0.05),color(1,0,0)) #LÍNEA 4 DERECHA DEL CUADRADO
     
     #TECHO DE LA PARED
-    MyRender.glLine(Vector3(0.6,-0.4),Vector3(0.8,-0.2),color(1,1,0))
-    MyRender.glLine(Vector3(0.6,-0.05),Vector3(0.8,-0.2),color(0,1,0))
+    MyRender.glLine(V3(0.6,-0.4),V3(0.8,-0.2),color(1,1,0))
+    MyRender.glLine(V3(0.6,-0.05),V3(0.8,-0.2),color(0,1,0))
     
     #SEGUNDA PARED (FRONTAL)    
     MyRender.glFinish('house.bmp')
@@ -97,17 +93,17 @@ def DrawPolligons():
 
 def Read_Objects():
     MyRender = Render(1024,1024)
-    scale=(5,5)
-    translate=(512,512)
+    scale=(5,5,10)
+    translate=(512,512,0)
     MyRender.glViewport(0, 0, 1024, 1024)
     MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()
     MyRender.glClearViewport(color(0, 0, 0))
-    MyRender.display_obj('spidey.obj',translate,scale,color(1,0,0))
-    MyRender.glFinish('spidey.bmp')
+    MyRender.display_obj('face.obj',translate,scale,color(1,0,0))
+    MyRender.glFinish('face.bmp')
     
 
-iterador= false
+iterador= False
 opciones= 0
 
 while not iterador:
@@ -148,7 +144,7 @@ while not iterador:
         elif opciones==5:
             Read_Objects()
         elif opciones==6:
-            iterador=true
+            iterador=True
             print("Gracias por usar mi renderer")
             
             

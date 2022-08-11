@@ -6,6 +6,8 @@
     Carnet: 20807
 
 """
+from cgitb import grey
+from locale import normalize
 import struct as st
 from collections import namedtuple
 from ReadObj import ReadObj
@@ -32,6 +34,52 @@ def color(r,g,b):
         int(g*255),
         int(r*255)])
 
+#Función para realizar tríangulos
+def bounding_box(A,B,C):
+    vers = [(A.x,A.y),(B.x,B.y),(C.x,C.y)]
+    
+    xmin=999999
+    xmax=-999999
+    ymin=999999
+    ymax=-999999
+    
+    for (x,y) in vers:
+        if x<xmin:
+            xmin=x
+        if x>xmax:
+            xmax=x
+        if y<ymin:
+            ymin=y
+        if y>ymax:
+            ymax=y
+    
+    return V3(xmin,ymin),V3(xmax,ymax)
+
+def cross(v0,v1):
+    return V3(
+            v0.y*v1.z-v0.z*v1.y,
+            v0.z*v1.x-v0.x*v1.z,
+            v0.x*v1.y-v0.y*v1.x
+    )
+    
+
+def barycentric(A,B,C,P):
+    areaPBC = (B.y - C.y) * (P.x - C.x) + (C.x - B.x) * (P.y - C.y)
+    areaPAC = (C.y - A.y) * (P.x - C.x) + (A.x - C.x) * (P.y - C.y)
+    areaABC = (B.y - C.y) * (A.x - C.x) + (C.x - B.x) * (A.y - C.y)
+
+    try:
+        # PBC / ABC
+        u = areaPBC / areaABC
+        # PAC / ABC
+        v = areaPAC / areaABC
+        # 1 - (u + v)
+        w = 1 - (u + v)
+    except:
+        return -1, -1, -1
+    else:
+        return u, v, w
+
 #CONSTANTES
 BLACK = color(0,0,0)
 WHITE = color(1,1,1)
@@ -43,6 +91,7 @@ class Render(object):
         self.clearColor = BLACK
         self.currColor = WHITE
         self.pixels=[]
+        self.zBuffer=[]
         self.glCreateWindow(self.width,self.height)
         self.glViewport(0,0,self.width, self.height)
         self.glClear()
@@ -65,8 +114,10 @@ class Render(object):
         self.currColor = color(r,g,b)
 
     def glClear(self):
-        self.pixels = [[ self.clearColor for y in range(self.height)]
-                       for x in range(self.width)]
+        self.pixels = [[ self.clearColor for x in range(self.width)]
+                       for y in range(self.height)]
+        self.zBuffer = [[ -9999 for x in range(self.width)]
+                       for y in range(self.height)]
 
     def glClearViewport(self, clr = None):
         for x in range(self.vpX, self.vpX + self.vpWidth):
@@ -200,10 +251,11 @@ class Render(object):
                 #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
     
     def transform_vertex(self, Vertex, translate, scale):
-        return[
+        return V3(
             (Vertex[0]*scale[0]) + translate[0],
-            (Vertex[1]*scale[1]) + translate[1]
-        ]
+            (Vertex[1]*scale[1]) + translate[1],
+            (Vertex[2]*scale[2]) + translate[2]
+        )
         
     def display_obj(self,filename,translate,scale,clr=None):
         dibujo = ReadObj(filename)
@@ -223,10 +275,9 @@ class Render(object):
                 v_4 = self.transform_vertex(dibujo.vertices[f4],translate,scale)
                 
                 #Recorremos los vertices en Line
-                self.line(Vector3(v_1[0],v_1[1]),Vector3(v_2[0],v_2[1]),clr)
-                self.line(Vector3(v_2[0],v_2[1]),Vector3(v_3[0],v_3[1]),clr)
-                self.line(Vector3(v_3[0],v_3[1]),Vector3(v_4[0],v_4[1]),clr)
-                self.line(Vector3(v_4[0],v_4[1]),Vector3(v_1[0],v_1[1]),clr)
+                self.triangle(v_1,v_2,v_4)
+                self.triangle(v_2,v_3,v_4)
+                
                 
             #Verificamos si las caras son un triangulo
             elif len(face) == 3 :
@@ -239,10 +290,8 @@ class Render(object):
                 v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
                 v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
                 
-                #Recorremos los vertices en Line
-                self.line(Vector3(v_1[0],v_1[1]),Vector3(v_2[0],v_2[1]),clr)
-                self.line(Vector3(v_2[0],v_2[1]),Vector3(v_3[0],v_3[1]),clr)
-                self.line(Vector3(v_3[0],v_3[1]),Vector3(v_1[0],v_1[1]),clr)
+                #Recorremos los vertices en Triangle                
+                self.triangle(v_1,v_2,v_3)
                 
                 
             
@@ -279,8 +328,60 @@ class Render(object):
         for i in range(len(polygon)):
             self.line(polygon[i], polygon[(i - 1) %
                         len(polygon)], clr)    
-        
     
+    def triangle(self,A,B,C,clr=None):
+        
+        #Hacemos una fuente de luz
+        L=V3(-1,-1,-1)
+        
+        #Calculamos la normal para todo el triangulo
+        N=(C-A)*(B-A)
+        
+        #print("Hola: ", N.x, N.y, N.z)
+        #print("Hola: ", L.x, L.y, L.z)
+        
+        #Calculamos la intensidad que hay entre la normal y la luz
+        
+        i= V3.norm(L) @ V3.norm(N)
+        
+        #print(N.norm() @ L.norm())
+        
+        #print("ESTE ES EL VALOR DE I: ",i)
+
+        #i = 1/i
+        
+        #print("i invertida", i)
+        
+        #print("Intensidad: ", i)
+        
+        if i < 0 :
+            return
+        
+        grey= round(1*i)
+        
+        #print("ESTE ES EL COLOR QUE SE ENVÍA: ", grey)
+        
+        self.currColor=color(
+            grey,
+            grey,
+            grey
+        )
+        
+        Bmin,Bmax = bounding_box(A,B,C)
+        
+        for x in range(round(Bmin.x),round(Bmax.x)+1):
+            for y in range(round(Bmin.y),round(Bmax.y)+1):
+                u,v,w= barycentric(A,B,C,V3(x,y))
+                if (w<0 or v<0 or u<0):
+                    continue
+                
+                #Calculamos Z
+                z=A.z*w + B.z*v + C.z*u
+                
+                if (self.zBuffer[x][y] < z):
+                    self.zBuffer[x][y]=z
+                    self.glPoint(x,y)
+            
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
     def glFinish(self, filename):
         f=open(filename, 'bw')
@@ -313,8 +414,6 @@ class Render(object):
                 f.write(self.pixels[x][y])
                 
         f.close()
-     
-        
         
         
         
