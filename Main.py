@@ -94,13 +94,13 @@ def DrawPolligons():
 def Read_Objects():
     MyRender = Render(1024,1024)
     scale=(5,5,10)
-    translate=(512,512,0)
+    translate=(500,512,0)
     MyRender.glViewport(0, 0, 1024, 1024)
     MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()
     MyRender.glClearViewport(color(0, 0, 0))
-    MyRender.display_obj('face.obj',translate,scale,color(1,0,0))
-    MyRender.glFinish('face.bmp')
+    MyRender.display_obj('spidey.obj',translate,scale,color(1,0,0))
+    MyRender.glFinish('SR4_FlatShadding.bmp')
     
 
 iterador= False

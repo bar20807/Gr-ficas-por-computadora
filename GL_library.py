@@ -6,8 +6,6 @@
     Carnet: 20807
 
 """
-from cgitb import grey
-from locale import normalize
 import struct as st
 from collections import namedtuple
 from ReadObj import ReadObj
@@ -252,9 +250,9 @@ class Render(object):
     
     def transform_vertex(self, Vertex, translate, scale):
         return V3(
-            (Vertex[0]*scale[0]) + translate[0],
-            (Vertex[1]*scale[1]) + translate[1],
-            (Vertex[2]*scale[2]) + translate[2]
+            round((Vertex[0]*scale[0]) + translate[0]),
+            round((Vertex[1]*scale[1]) + translate[1]),
+            round((Vertex[2]*scale[2]) + translate[2])
         )
         
     def display_obj(self,filename,translate,scale,clr=None):
@@ -274,10 +272,11 @@ class Render(object):
                 v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
                 v_4 = self.transform_vertex(dibujo.vertices[f4],translate,scale)
                 
+                #print("VALORES DE V_1: ",v_1)
+
                 #Recorremos los vertices en Line
                 self.triangle(v_1,v_2,v_4)
                 self.triangle(v_2,v_3,v_4)
-                
                 
             #Verificamos si las caras son un triangulo
             elif len(face) == 3 :
@@ -329,6 +328,52 @@ class Render(object):
             self.line(polygon[i], polygon[(i - 1) %
                         len(polygon)], clr)    
     
+    def triangle_std(self,A,B,C,clr=None):
+        if A.y > B.y:
+            A,B=B,A
+        if A.y>C.y:
+            A,C=C,A
+        if B.y > C.y:
+            B,C=C,B
+        
+        dx_ac= C.x-A.x
+        dy_ac= C.y-A.y
+        
+        if dy_ac==0:
+            return
+        
+        mi_ac=dx_ac/dy_ac
+
+        dx_ab=B.x-A.x
+        dy_ab=B.y-A.y
+        
+        if dy_ab!=0:
+            mi_ab=dx_ab/dy_ab
+            for y in range(round(A.y),round(B.y+1)):
+                xi= round(A.x - mi_ac*(A.y-y))
+                xf= round(A.x - mi_ab*(A.y-y))
+                if xi>xf:
+                    xi,xf=xf,xi
+                    
+                for x in range(xi,xf):
+                    self.glPoint(x,y,clr)
+        
+        dx_bc=C.x-B.x
+        dy_bc=C.y-B.y
+        
+        if dy_bc!=0:
+            mi_bc=dx_bc/dy_bc  
+            for y in range(round(B.y),round(C.y+1)):
+                xi= round(A.x - mi_ac*(A.y-y))
+                xf= round(B.x - mi_bc*(B.y-y))
+                if xi>xf:
+                    xi,xf=xf,xi
+                    
+                for x in range(xi,xf):
+                    self.glPoint(x,y,clr)
+            
+        
+    
     def triangle(self,A,B,C,clr=None):
         
         #Hacemos una fuente de luz
@@ -377,7 +422,6 @@ class Render(object):
                 
                 #Calculamos Z
                 z=A.z*w + B.z*v + C.z*u
-                
                 if (self.zBuffer[x][y] < z):
                     self.zBuffer[x][y]=z
                     self.glPoint(x,y)

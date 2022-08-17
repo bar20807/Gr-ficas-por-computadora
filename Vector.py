@@ -4,6 +4,11 @@ class V3(object):
         self.y=y
         self.z=z
     
+    def round(self):
+        self.x=round(self.x)
+        self.y=round(self.y)
+        self.z=round(self.z)
+    
     #Retorna la suma de vectores
     def __add__(self, other):
         return V3(
