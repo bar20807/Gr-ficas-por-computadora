@@ -72,16 +72,14 @@ class V3(object):
             
     """
     def norm(self):
-        """
-            Input: 1 size 3 vector
-            Output: Size 3 vector with the normal of the vector
-        """  
-        v0length = self.length()
-
-        if not v0length:
-            return V3(0, 0, 0)
-
-        return V3(self.x/v0length, self.y/v0length, self.z/v0length)
+        #Si no devuelve una división por cero
+        #print("Entre a Norm")
+        try:
+            return self * (1 / self.length())
+        #Si devuelve una división por cero
+        except:
+            return V3(-1,-1,-1)
+        
 
     #Retorna los valores en tipo string de las coordenadas ingresadas    
     def __repr__(self):

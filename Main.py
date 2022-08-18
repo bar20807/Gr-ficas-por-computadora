@@ -93,8 +93,8 @@ def DrawPolligons():
 
 def Read_Objects():
     MyRender = Render(1024,1024)
-    scale=(5,5,10)
-    translate=(500,512,0)
+    scale=(5,5,30)
+    translate=(512,500,0)
     MyRender.glViewport(0, 0, 1024, 1024)
     MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()

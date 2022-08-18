@@ -6,8 +6,11 @@
     Carnet: 20807
 
 """
+from cgi import print_environ
+from re import U
 import struct as st
 from collections import namedtuple
+from tkinter import W
 from ReadObj import ReadObj
 from Vector import *
 
@@ -54,7 +57,7 @@ def bounding_box(A,B,C):
     return V3(xmin,ymin),V3(xmax,ymax)
 
 def cross(v0,v1):
-    return V3(
+    return (
             v0.y*v1.z-v0.z*v1.y,
             v0.z*v1.x-v0.x*v1.z,
             v0.x*v1.y-v0.y*v1.x
@@ -62,21 +65,19 @@ def cross(v0,v1):
     
 
 def barycentric(A,B,C,P):
-    areaPBC = (B.y - C.y) * (P.x - C.x) + (C.x - B.x) * (P.y - C.y)
-    areaPAC = (C.y - A.y) * (P.x - C.x) + (A.x - C.x) * (P.y - C.y)
-    areaABC = (B.y - C.y) * (A.x - C.x) + (C.x - B.x) * (A.y - C.y)
-
-    try:
-        # PBC / ABC
-        u = areaPBC / areaABC
-        # PAC / ABC
-        v = areaPAC / areaABC
-        # 1 - (u + v)
-        w = 1 - (u + v)
-    except:
+    cx,cy,cz=cross(
+        V3(B.x-A.x,C.x-A.x,A.x-P.x),
+        V3(B.y-A.y,C.y-A.y,A.y-P.y)
+    )
+    
+    if abs(cz) < 1:
         return -1, -1, -1
-    else:
-        return u, v, w
+    
+    u = cx/cz
+    v = cy/cz
+    w = 1 - (u + v)
+
+    return (w, v, u)
 
 #CONSTANTES
 BLACK = color(0,0,0)
@@ -377,7 +378,7 @@ class Render(object):
     def triangle(self,A,B,C,clr=None):
         
         #Hacemos una fuente de luz
-        L=V3(-1,-1,-1)
+        L=V3(0,0,-1)
         
         #Calculamos la normal para todo el triangulo
         N=(C-A)*(B-A)
@@ -387,7 +388,8 @@ class Render(object):
         
         #Calculamos la intensidad que hay entre la normal y la luz
         
-        i= V3.norm(L) @ V3.norm(N)
+        i= N.norm() @ L.norm()
+        print(i)
         
         #print(N.norm() @ L.norm())
         
@@ -402,7 +404,7 @@ class Render(object):
         if i < 0 :
             return
         
-        grey= round(1*i)
+        grey= 1*i
         
         #print("ESTE ES EL COLOR QUE SE ENVÍA: ", grey)
         
@@ -414,12 +416,14 @@ class Render(object):
         
         Bmin,Bmax = bounding_box(A,B,C)
         
-        for x in range(round(Bmin.x),round(Bmax.x)+1):
-            for y in range(round(Bmin.y),round(Bmax.y)+1):
-                u,v,w= barycentric(A,B,C,V3(x,y))
+        Bmin.round()
+        Bmax.round()
+        
+        for x in range(Bmin.x,Bmax.x+1):
+            for y in range(Bmin.y,Bmax.y+1):
+                w,v,u= barycentric(A,B,C,V3(x,y))
                 if (w<0 or v<0 or u<0):
                     continue
-                
                 #Calculamos Z
                 z=A.z*w + B.z*v + C.z*u
                 if (self.zBuffer[x][y] < z):
