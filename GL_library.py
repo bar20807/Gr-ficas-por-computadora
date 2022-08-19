@@ -89,7 +89,7 @@ class Render(object):
         self.height = height
         self.clearColor = BLACK
         self.currColor = WHITE
-        self.pixels=[]
+        self.framebuffer=[]
         self.zBuffer=[]
         self.glCreateWindow(self.width,self.height)
         self.glViewport(0,0,self.width, self.height)
@@ -113,7 +113,7 @@ class Render(object):
         self.currColor = color(r,g,b)
 
     def glClear(self):
-        self.pixels = [[ self.clearColor for x in range(self.width)]
+        self.framebuffer = [[ self.clearColor for x in range(self.width)]
                        for y in range(self.height)]
         self.zBuffer = [[ -9999 for x in range(self.width)]
                        for y in range(self.height)]
@@ -126,7 +126,7 @@ class Render(object):
 
     def glPoint(self, x, y, clr = None): # Window Coordinates
         if (0 <= x < self.width) and (0 <= y < self.height):
-            self.pixels[x][y] = clr or self.currColor
+            self.framebuffer[x][y] = clr or self.currColor
 
     def glVertex(self, x, y, clr = None): # NDC
         if x > 1 or x < -1 or y > 1 or y < -1:
@@ -457,9 +457,9 @@ class Render(object):
         
         #Pixel Data
         
-        for x in range(self.height):
-            for y in range(self.width):
-                f.write(self.pixels[x][y])
+        for y in range(self.height):
+            for x in range(self.width):
+                f.write(self.framebuffer[y][x])
                 
         f.close()
         
