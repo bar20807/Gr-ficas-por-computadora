@@ -1,5 +1,6 @@
 from GL_library import Render, color,V
 from Vector import *
+from texture import Texture
 
 # 13,20,80,40
 
@@ -93,14 +94,13 @@ def DrawPolligons():
 
 def Read_Objects():
     MyRender = Render(1024,1024)
-    scale=(5,5,30)
-    translate=(512,500,0)
-    MyRender.glViewport(0, 0, 1024, 1024)
+    scale = (10, 10, 20)
+    translate = (512, 300, 0)
+    MyRender.glCreateWindow(1024,1024)
     MyRender.glClearColor(0.5, 0.5, 0.5)
     MyRender.glClear()
-    MyRender.glClearViewport(color(0, 0, 0))
-    MyRender.display_obj('spidey.obj',translate,scale,color(1,0,0))
-    MyRender.glFinish('SR4_FlatShadding.bmp')
+    MyRender.display_obj('face.obj','model.bmp',translate,scale,color(1,0,0))
+    MyRender.glFinish('triangleLineFramebuffer.bmp')
     
 
 iterador= False

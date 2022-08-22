@@ -13,8 +13,10 @@ from collections import namedtuple
 from tkinter import W
 from ReadObj import ReadObj
 from Vector import *
+from texture import *
 
 V=namedtuple('V',['x','y'])
+texture=Texture()
 
 def char(c):
     # 1 byte
@@ -91,6 +93,7 @@ class Render(object):
         self.currColor = WHITE
         self.framebuffer=[]
         self.zBuffer=[]
+        self.texture=None
         self.glCreateWindow(self.width,self.height)
         self.glViewport(0,0,self.width, self.height)
         self.glClear()
@@ -256,42 +259,108 @@ class Render(object):
             round((Vertex[2]*scale[2]) + translate[2])
         )
         
-    def display_obj(self,filename,translate,scale,clr=None):
+    def display_obj(self,filename,filename2,translate,scale,clr=None):
         dibujo = ReadObj(filename)
+        texture.read(filename2)
+        if filename2: 
+            texture.read(filename2)
+            self.texture=filename2
         for face in dibujo.faces:
             #Verificamos si es un cuadrado
             if len(face) == 4:
-                
-                f1=face[0][0]-1
-                f2=face[1][0]-1
-                f3=face[2][0]-1
-                f4=face[3][0]-1
+                if self.texture:
+                    
+                    f1=face[0][0]-1
+                    f2=face[1][0]-1
+                    f3=face[2][0]-1
+                    f4=face[3][0]-1
 
-                #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
-                v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
-                v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
-                v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
-                v_4 = self.transform_vertex(dibujo.vertices[f4],translate,scale)
+                    #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
+                    v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
+                    v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
+                    v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
+                    v_4 = self.transform_vertex(dibujo.vertices[f4],translate,scale)
+                    
+                    print("Entre a texturas")
                 
-                #print("VALORES DE V_1: ",v_1)
+                    #Cargamos las caras de las texturas
+                    ft1=face[0][1]-1
+                    ft2=face[1][1]-1
+                    ft3=face[2][1]-1
+                    ft4=face[3][1]-1
 
-                #Recorremos los vertices en Line
-                self.triangle(v_1,v_2,v_4)
-                self.triangle(v_2,v_3,v_4)
+                    #Calculamos y mandamos cada uno de los vertices de texturas
+                    vt_1 = V3(*dibujo.tvertices[ft1])
+                    vt_2 = V3(*dibujo.tvertices[ft2])
+                    vt_3 = V3(*dibujo.tvertices[ft3])
+                    vt_4 = V3(*dibujo.tvertices[ft4])
+                    
+                    #Recorremos los vertices en Triangle                
+                    self.triangle(
+                        (v_1,v_2,v_4),
+                        (vt_1,vt_2,vt_4))
+                    self.triangle(
+                        (v_2,v_3,v_4),
+                        (vt_2,vt_3,vt_4))
+                else:
+                    
+                    f1=face[0][0]-1
+                    f2=face[1][0]-1
+                    f3=face[2][0]-1
+                    f4=face[3][0]-1
+
+                    #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
+                    v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
+                    v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
+                    v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
+                    v_4 = self.transform_vertex(dibujo.vertices[f4],translate,scale)
+                          
+                    #print("VALORES DE V_1: ",v_1)
+
+                    #Recorremos los vertices en Line
+                    self.triangle((v_1,v_2,v_4))
+                    self.triangle((v_2,v_3,v_4))
                 
             #Verificamos si las caras son un triangulo
-            elif len(face) == 3 :
-                f1=face[0][0]-1
-                f2=face[1][0]-1
-                f3=face[2][0]-1
+            if len(face) == 3 :
+                if self.texture:
+                    
+                    f1=face[0][0]-1
+                    f2=face[1][0]-1
+                    f3=face[2][0]-1
 
-                #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
-                v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
-                v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
-                v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
+                    #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
+                    v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
+                    v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
+                    v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
+                    
+                    print("Entre a texturas")
                 
-                #Recorremos los vertices en Triangle                
-                self.triangle(v_1,v_2,v_3)
+                    #Cargamos las caras de las texturas
+                    ft1=face[0][1]-1
+                    ft2=face[1][1]-1
+                    ft3=face[2][1]-1
+
+                    #Calculamos y mandamos cada uno de los vertices de texturas
+                    vt_1 = V3(*dibujo.tvertices[ft1])
+                    vt_2 = V3(*dibujo.tvertices[ft2])
+                    vt_3 = V3(*dibujo.tvertices[ft3])
+                    
+                    #Recorremos los vertices en Triangle                
+                    self.triangle(
+                        (v_1,v_2,v_3),
+                        (vt_1,vt_2,vt_3))
+                else:
+                    f1=face[0][0]-1
+                    f2=face[1][0]-1
+                    f3=face[2][0]-1
+
+                    #Calculamos y mandamos cada uno de los vertices al tranformador de vertices
+                    v_1 = self.transform_vertex(dibujo.vertices[f1],translate,scale)
+                    v_2 = self.transform_vertex(dibujo.vertices[f2],translate,scale)
+                    v_3 = self.transform_vertex(dibujo.vertices[f3],translate,scale)
+                    self.triangle((v_1,v_2,v_3))
+                
                 
                 
             
@@ -375,7 +444,12 @@ class Render(object):
             
         
     
-    def triangle(self,A,B,C,clr=None):
+    def triangle(self,vertices,tvertices=(),clr=None):
+        
+        A,B,C=vertices
+        print("ESTO ES TVERTICES",tvertices)
+        if self.texture:
+            tA,tB,tC=tvertices
         
         #Hacemos una fuente de luz
         L=V3(0,0,-1)
@@ -388,8 +462,8 @@ class Render(object):
         
         #Calculamos la intensidad que hay entre la normal y la luz
         
-        i= N.norm() @ L.norm()
-        print(i)
+        i= (N.norm() @ L.norm())
+        #print(i)
         
         #print(N.norm() @ L.norm())
         
@@ -401,9 +475,12 @@ class Render(object):
         
         #print("Intensidad: ", i)
         
-        if i < 0 :
-            return
-        
+        if i < 0: 
+            i = abs(i) 
+        #print(i).
+        if i > 1:
+            i = 1
+            
         grey= 1*i
         
         #print("ESTE ES EL COLOR QUE SE ENVÍA: ", grey)
@@ -428,8 +505,44 @@ class Render(object):
                 z=A.z*w + B.z*v + C.z*u
                 if (self.zBuffer[x][y] < z):
                     self.zBuffer[x][y]=z
-                    self.glPoint(x,y)
-            
+                    if self.texture:
+                        tx= tA.x*w + tB.x*u+tC.x*v
+                        print("VALORES DE tx: ",tx)
+                        ty= tA.y*w + tB.y*u+tC.y*v
+                        self.currColor= texture.get_color_with_intensity(tx,ty,i)
+                    self.glPoint(y,x)
+    
+    def triangle_texture(self,filename,filename2,clr):
+        dibujo = ReadObj(filename)
+        texture.read(filename2)
+        self.framebuffer=texture.pixels  
+        #Verificamos si las caras son un triangulo
+        for face in dibujo.faces:
+            if len(face) == 3:
+                f1=face[0][0]-1
+                f2=face[1][0]-1
+                f3=face[2][0]-1
+                        
+                print("Entre a texturas")
+                    
+                #Calculamos y mandamos cada uno de los vertices de texturas
+                vt_1 = V3(
+                    dibujo.tvertices[f1][0]*texture.width,
+                    dibujo.tvertices[f1][1]*texture.height
+                    )
+                vt_2 = V3(
+                    dibujo.tvertices[f2][0]*texture.width,
+                    dibujo.tvertices[f2][1]*texture.height
+                    )
+                vt_3 = V3(
+                    dibujo.tvertices[f3][0]*texture.width,
+                    dibujo.tvertices[f3][1]*texture.height
+                    )
+                #Recorremos las texturas con glLine              
+                self.line(vt_1,vt_2,clr)
+                self.line(vt_2,vt_3,clr)
+                self.line(vt_3,vt_1,clr)
+                
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
     def glFinish(self, filename):
         f=open(filename, 'bw')

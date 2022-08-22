@@ -1,12 +1,12 @@
 import struct as st
-from GL_library import *
-class Texture:
-    def __init__(self,path):
-        self.path=path
-        self.read()
-        
-    def read(self):
-        with open(self.path,"rb") as image:
+def color(r,g,b):
+    return bytes([
+        int(b*255), #Se multiplica el número ingresado por 255 para obtener el color
+        int(g*255),
+        int(r*255)])
+class Texture:  
+    def read(self,path):
+        with open(path,"rb") as image:
             image.seek(2+4+2+2)
             #Lee un total de 4 bites
             #unpack sirve para darle un valor entero a los bites
@@ -34,22 +34,18 @@ class Texture:
     def get_color(self,tx,ty):
         x= round(tx*self.width)
         y= round(ty*self.height)
-        
         return self.pixels[y][x]
     #Obtenemos el color del array con cierta intensidad
     def get_color_with_intensity(self,tx,ty,intensity):
-        x= round(tx*self.width)
-        y= round(ty*self.height)
+        x= round(tx*self.width/255)
+        y= round(ty*self.height/255)
         
-        r= self.pixels[y][x][0]*intensity
-        g= self.pixels[y][x][1]*intensity
-        b= self.pixels[y][x][2]*intensity
+        print("VALOR DE X ", x)
+        print("VALORES DE Y", y)
+        print("VALORES DE r", self.pixels[y][x][0]*intensity)
+        r= self.pixels[y*255][x*255][0]*intensity
+        #print("VALORES DE r", r)
+        g= self.pixels[y*255][x*255][1]*intensity
+        b= self.pixels[y*255][x*255][2]*intensity
         
         return color((r/255),(g/255),(b/255))
-
-r=Render(1024,1024)
-t=Texture("model.bmp")
-
-r.framebuffer=t.pixels
-
-r.glFinish("t.bmp")
