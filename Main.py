@@ -93,14 +93,10 @@ def DrawPolligons():
     
 
 def Read_Objects():
-    MyRender = Render(1024,1024)
-    scale = (10, 10, 20)
-    translate = (512, 300, 0)
-    MyRender.glCreateWindow(1024,1024)
-    MyRender.glClearColor(0.5, 0.5, 0.5)
-    MyRender.glClear()
-    MyRender.display_obj('face.obj','model.bmp',translate,scale,color(1,0,0))
-    MyRender.glFinish('triangleLineFramebuffer.bmp')
+    MyRender = Render(800, 800)
+    t=Texture('model.bmp')
+    MyRender.display_obj('face.obj', (400, 400, 0),(10, 10, 15),texture=t)
+    MyRender.glFinish('faceTexture.bmp')
     
 
 iterador= False
