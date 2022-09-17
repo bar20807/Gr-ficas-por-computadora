@@ -299,7 +299,7 @@ class Render(object):
                     grey = round(255 * i)
                     if grey < 0:
                         continue
-                    self.triangle(a, b, c, color=color(grey, grey, grey))
+                    self.triangle(a, b, c, color=color(grey/255, grey/255, grey/255))
                 else:
                     t1 = face[0][1] - 1
                     t2 = face[1][1] - 1
@@ -345,8 +345,8 @@ class Render(object):
                     grey = round(255 * i)
                     if grey < 0:
                         continue
-                    self.triangle(A, B, C, color(grey, grey, grey))
-                    self.triangle(A, C, D, color(grey, grey, grey))            
+                    self.triangle(A, B, C, color(grey/255, grey/255, grey/255))
+                    self.triangle(A, C, D, color(grey/255, grey/255, grey/255))            
                 else:
                     t1 = face[0][1] - 1
                     t2 = face[1][1] - 1
