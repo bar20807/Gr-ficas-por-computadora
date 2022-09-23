@@ -496,9 +496,3 @@ class Render(object):
                 f.write(self.framebuffer[y][x])
                 
         f.close()
-        
-        
-        
-    
-    
-        
