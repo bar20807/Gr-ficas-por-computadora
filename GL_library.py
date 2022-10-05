@@ -310,7 +310,7 @@ class Render(object):
         ]
         transformed_vertex = self.Model @ augmented_vertex
         transformed_vertex = V3(transformed_vertex)
-        print(transformed_vertex)
+        #print(transformed_vertex)
         return V3(
             transformed_vertex.x / transformed_vertex.w,
             transformed_vertex.y / transformed_vertex.w,
