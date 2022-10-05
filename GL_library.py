@@ -140,7 +140,7 @@ class Render(object):
         ])
 
         self.Model = translation_matrix @ rotation_matrix @ scale_matrix
-    
+
     def glCreateWindow(self,width, height):
             if width % 4 == 0 and height % 4 == 0:
                 self.width = width 
