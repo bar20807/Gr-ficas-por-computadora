@@ -1,4 +1,4 @@
-from GL_library import Render, color,V
+from GL_library import Render, color
 from Vector import *
 from texture import Texture
 
@@ -93,10 +93,10 @@ def DrawPolligons():
     
 
 def Read_Objects():
-    MyRender = Render(400, 400)
-    t=Texture('Bump_1K.bmp')
-    MyRender.display_obj('Mercury_1K.obj', (200, 200, 200),(700, 700, 750),texture=t)
-    MyRender.glFinish('LAB2_Mercury.bmp')
+    MyRender = Render(1000, 1000)
+    t=Texture('model.bmp')
+    MyRender.display_obj('model.obj', (512, 500, 0), (400, 400, 500), texture=t)
+    MyRender.glFinish('MatrixPrueba.bmp')
     
 
 iterador= False
