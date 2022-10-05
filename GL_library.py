@@ -521,7 +521,7 @@ class Render(object):
                     self.glPoint(x, y, color)
                     self.zBuffer[x][y] = z
 
-                
+                 
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
     def glFinish(self, filename):
         f=open(filename, 'bw')

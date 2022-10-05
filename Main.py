@@ -95,7 +95,7 @@ def DrawPolligons():
 def Read_Objects():
     MyRender = Render(1000, 1000)
     t=Texture('model.bmp')
-    MyRender.display_obj('model.obj', (0, 500, 0), (400, 400, 500), texture=t)
+    MyRender.display_obj('model.obj', (512, 500, 0), (400, 400, 500), texture=t)
     MyRender.glFinish('MatrixPrueba.bmp')
     
 
