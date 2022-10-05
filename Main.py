@@ -1,6 +1,7 @@
 from GL_library import Render, color
 from Vector import *
 from texture import Texture
+from math import *
 
 # 13,20,80,40
 
@@ -95,7 +96,7 @@ def DrawPolligons():
 def Read_Objects():
     MyRender = Render(1000, 1000)
     t=Texture('model.bmp')
-    MyRender.display_obj('model.obj', (512, 500, 0), (400, 400, 500), texture=t)
+    MyRender.display_obj('model.obj', (512, 500, 0), (400, 400, 500),(pi/3, 0, 0), texture=t)
     MyRender.glFinish('MatrixPrueba.bmp')
     
 
