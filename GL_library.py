@@ -9,7 +9,8 @@
 import struct as st
 from ReadObj import ReadObj
 from Vector import *
-
+from numpy import *
+from math import *
 
 
 def char(c):
@@ -91,6 +92,54 @@ class Render(object):
         self.glCreateWindow(self.width,self.height)
         self.glViewport(0,0,self.width, self.height)
         self.glClear()
+        self.Model= None
+
+    def loadModelMatrix(self, translate=(0,0,0), scale =(1,1,1), rotate=(0,0,0)):
+        translate = V3(*translate)
+        scale = V3(*scale)
+        rotate = V3(*rotate)
+
+        translation_matrix = matrix([
+            [1, 0, 0, translate.x],
+            [0, 1, 0, translate.y],
+            [0, 0, 1, translate.z],
+            [0, 0, 0, 1],
+        ])
+
+        a = rotate.x
+        rotation_matrix_x = matrix([
+            [1, 0, 0, 0],
+            [0, cos(a), -sin(a), 0],
+            [0, sin(a), cos(a), 0],
+            [0, 0, 0, 1]
+        ])
+
+        a = rotate.y
+        rotation_matrix_y = matrix([
+            [cos(a), 0, sin(a), 0],
+            [0, 1, 0, 0],
+            [-sin(a), 0, cos(a), 0],
+            [0, 0, 0, 1]
+        ])
+
+        a = rotate.z
+        rotation_matrix_z = matrix([
+            [cos(a), -sin(a), 0, 0],
+            [sin(a), cos(a), 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
+
+        rotation_matrix = rotation_matrix_x @ rotation_matrix_y @ rotation_matrix_z
+
+        scale_matrix = matrix([
+            [scale.x, 0, 0, 0],
+            [0, scale.y, 0, 0],
+            [0, 0, scale.z, 0],
+            [0, 0, 0, 1],
+        ])
+
+        self.Model = translation_matrix @ rotation_matrix @ scale_matrix
     
     def glCreateWindow(self,width, height):
             if width % 4 == 0 and height % 4 == 0:
@@ -252,15 +301,24 @@ class Render(object):
                 threshold+=dx*2
                 #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
     
-    def transform_vertex(self, Vertex, translate, scale):
-        #print("ESTA ES LA ESCALA: ", scale)
+    def transform_vertex(self, Vertex):
+        augmented_vertex=[
+            Vertex[0],
+            Vertex[1],
+            Vertex[2],
+            1
+        ]
+        transformed_vertex = self.Model @ augmented_vertex
+        transformed_vertex = V3(transformed_vertex)
+        print(transformed_vertex)
         return V3(
-            round((Vertex[0]*scale[0]) + translate[0]),
-            round((Vertex[1]*scale[1]) + translate[1]),
-            round((Vertex[2]*scale[2]) + translate[2])
+            transformed_vertex.x / transformed_vertex.w,
+            transformed_vertex.y / transformed_vertex.w,
+            transformed_vertex.z / transformed_vertex.w
         )
         
-    def display_obj(self, filename, translate=(0, 0, 0), scale=(1, 1, 1), texture=None):
+    def display_obj(self, filename, translate=(0, 0, 0), scale=(1, 1, 1),rotate=(0,0,0), texture=None):
+        self.loadModelMatrix(translate, scale, rotate)
         dibujo = ReadObj(filename)
         #Hacemos una fuente de luz
         L=V3(0,0,1)
@@ -272,9 +330,9 @@ class Render(object):
                 f2 = face[1][0] - 1
                 f3 = face[2][0] - 1
 
-                a = self.transform_vertex(dibujo.vertices[f1], translate, scale)
-                b = self.transform_vertex(dibujo.vertices[f2], translate, scale)
-                c = self.transform_vertex(dibujo.vertices[f3], translate, scale)
+                a = self.transform_vertex(dibujo.vertices[f1])
+                b = self.transform_vertex(dibujo.vertices[f2])
+                c = self.transform_vertex(dibujo.vertices[f3])
                 
                 
                 #Calculamos la normal para todo el triangulo
@@ -313,10 +371,10 @@ class Render(object):
                 f4 = face[3][0] - 1   
 
                 vertices = [
-                    self.transform_vertex(dibujo.vertices[f1], translate, scale),
-                    self.transform_vertex(dibujo.vertices[f2], translate, scale),
-                    self.transform_vertex(dibujo.vertices[f3], translate, scale),
-                    self.transform_vertex(dibujo.vertices[f4], translate, scale)
+                    self.transform_vertex(dibujo.vertices[f1]),
+                    self.transform_vertex(dibujo.vertices[f2]),
+                    self.transform_vertex(dibujo.vertices[f3]),
+                    self.transform_vertex(dibujo.vertices[f4])
                 ]
                 
                 #Calculamos la normal para todo el triangulo
@@ -385,7 +443,7 @@ class Render(object):
     def drawPolygon(self, polygon, clr=None):
         for i in range(100):
             for idx, (x, y) in enumerate(polygon):
-                polygon[idx] = V(x,y)
+                polygon[idx] = V3(x,y)
 
         for i in range(len(polygon)):
             self.line(polygon[i], polygon[(i - 1) %
@@ -441,8 +499,8 @@ class Render(object):
         
         bbox_min, bbox_max = bounding_box(A, B, C)
 
-        for x in range(bbox_min.x, bbox_max.x + 1):
-            for y in range(bbox_min.y, bbox_max.y + 1):
+        for x in range(round(bbox_min.x), round(bbox_max.x) + 1):
+            for y in range(round(bbox_min.y), round(bbox_max.y) + 1):
                 w, v, u = barycentric(A, B, C, V3(x, y))
                 if w < 0 or v < 0 or u < 0:
                     continue
