@@ -8,7 +8,8 @@ class RayTracer(object):
         self.width = width
         self.height=height
         self.clear_color = color(0,0,0)
-        self.current_color=color(1,1,1)  
+        self.current_color=color(1,1,1)
+        self.scene=[]  
         self.clear()
         
     def clear(self):
@@ -45,9 +46,9 @@ class RayTracer(object):
             #print("entre clearcolor")
             return self.clear_color
 
-r = RayTracer(800,800)
+r = RayTracer(800,600)
+r.point(100,100)
 r.render()
-#r.point(100,100)
 r.write('Sphere.bmp')
     
         
