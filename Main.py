@@ -3,6 +3,7 @@ from Vector import *
 from texture import Texture
 from math import *
 
+
 # 13,20,80,40
 
 def SR1(x,y,r,g,b):
@@ -96,7 +97,8 @@ def DrawPolligons():
 def Read_Objects():
     MyRender = Render(1000, 1000)
     t=Texture('model.bmp')
-    MyRender.display_obj('model.obj', (512, 500, 0), (400, 400, 500),(pi/3, 0, 0), texture=t)
+    MyRender.lookAt(V3(0,0,1), V3(0,0,0), V3(0,1,0))
+    MyRender.display_obj('model.obj', (512, 500, 0), (400, 400, 500),(0,pi/8,0), texture=t)
     MyRender.glFinish('MatrixPrueba.bmp')
     
 

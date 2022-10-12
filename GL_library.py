@@ -9,9 +9,9 @@
 import struct as st
 from ReadObj import ReadObj
 from Vector import *
-from numpy import *
 from math import *
-
+from array import *
+from MathFunctionsMatrix import *
 
 def char(c):
     # 1 byte
@@ -93,54 +93,93 @@ class Render(object):
         self.glViewport(0,0,self.width, self.height)
         self.glClear()
         self.Model= None
+        self.View= None
 
     def loadModelMatrix(self, translate=(0,0,0), scale =(1,1,1), rotate=(0,0,0)):
-        translate = V3(*translate)
         scale = V3(*scale)
+        translate = V3(*translate)
         rotate = V3(*rotate)
 
-        translation_matrix = matrix([
+        translation_matrix = MathMatrix([
             [1, 0, 0, translate.x],
             [0, 1, 0, translate.y],
             [0, 0, 1, translate.z],
-            [0, 0, 0, 1],
+            [0, 0, 0, 1]
         ])
 
-        a = rotate.x
-        rotation_matrix_x = matrix([
+        scalation_matrix = MathMatrix([
+            [scale.x, 0, 0, 0],
+            [0, scale.y, 0, 0],
+            [0, 0, scale.z, 0],
+            [0, 0, 0, 1]
+        ])
+
+        a_x = rotate.x
+
+        rotation_x = MathMatrix([
             [1, 0, 0, 0],
-            [0, cos(a), -sin(a), 0],
-            [0, sin(a), cos(a), 0],
+            [0,cos(a_x), -sin(a_x), 0],
+            [0, sin(a_x), cos(a_x), 0],
             [0, 0, 0, 1]
         ])
 
-        a = rotate.y
-        rotation_matrix_y = matrix([
-            [cos(a), 0, sin(a), 0],
+        a_y = rotate.y
+        
+        
+        rotation_y = MathMatrix([
+            [cos(a_y), 0, -sin(a_y), 0],
             [0, 1, 0, 0],
-            [-sin(a), 0, cos(a), 0],
+            [sin(a_y), 0, cos(a_y), 0],
             [0, 0, 0, 1]
         ])
+        
+        a_z = rotate.z
 
-        a = rotate.z
-        rotation_matrix_z = matrix([
-            [cos(a), -sin(a), 0, 0],
-            [sin(a), cos(a), 0, 0],
+        rotation_z = MathMatrix([
+            [cos(a_z), -sin(a_z), 0, 0],
+            [sin(a_z), cos(a_z), 0, 0],
             [0, 0, 1, 0],
             [0, 0, 0, 1]
         ])
 
-        rotation_matrix = rotation_matrix_x @ rotation_matrix_y @ rotation_matrix_z
+        rotation_matrix = rotation_x * rotation_y * rotation_z
+        
+        print("Translation: " + str(translation_matrix))
+        print("Scalation: " + str(scalation_matrix))
+        print("Rotation: " + str(rotation_matrix))
 
-        scale_matrix = matrix([
-            [scale.x, 0, 0, 0],
-            [0, scale.y, 0, 0],
-            [0, 0, scale.z, 0],
-            [0, 0, 0, 1],
+        print("Imprimiendo las multiplicaciones: " + str(translation_matrix * scalation_matrix * rotation_matrix))
+
+        self.Model = translation_matrix * (rotation_matrix * scalation_matrix)
+        
+
+    def loadViewMatrix(self, x, y, z, center):
+        M = MathMatrix([
+      [x.x, x.y, x.z,  0],
+      [y.x, y.y, y.z, 0],
+      [z.x, z.y, z.z, 0],
+      [0,     0,   0, 1]
         ])
 
-        self.Model = translation_matrix @ rotation_matrix @ scale_matrix
+        O = MathMatrix([
+        [1, 0, 0, -center.x],
+        [0, 1, 0, -center.y],
+        [0, 0, 1, -center.z],
+        [0, 0, 0, 1]
+        ])
 
+        self.View = M * O
+        
+        #print(self.View)
+
+    def lookAt(self, eye, center, up):
+        z = (eye - center).norm()
+        x = (up*z).norm()
+        y = (z*x).norm()
+
+        self.loadViewMatrix(x, y, z, center)
+        
+    
     def glCreateWindow(self,width, height):
             if width % 4 == 0 and height % 4 == 0:
                 self.width = width 
@@ -302,19 +341,18 @@ class Render(object):
                 #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
     
     def transform_vertex(self, Vertex):
-        augmented_vertex=[
-            Vertex[0],
-            Vertex[1],
-            Vertex[2],
-            1
-        ]
-        transformed_vertex = self.Model @ augmented_vertex
-        transformed_vertex = V3(transformed_vertex)
+        augmented_vertex=MathMatrix([
+            [Vertex[0]],
+            [Vertex[1]],
+            [Vertex[2]],
+            [1]
+        ])
+        transformed_vertex = self.View * self.Model * augmented_vertex
         #print(transformed_vertex)
         return V3(
-            transformed_vertex.x / transformed_vertex.w,
-            transformed_vertex.y / transformed_vertex.w,
-            transformed_vertex.z / transformed_vertex.w
+            transformed_vertex.getMathMatrix()[0][0]/transformed_vertex.getMathMatrix()[3][0], 
+            transformed_vertex.getMathMatrix()[1][0]/transformed_vertex.getMathMatrix()[3][0],
+            transformed_vertex.getMathMatrix()[2][0]/transformed_vertex.getMathMatrix()[3][0]
         )
         
     def display_obj(self, filename, translate=(0, 0, 0), scale=(1, 1, 1),rotate=(0,0,0), texture=None):
@@ -507,12 +545,12 @@ class Render(object):
                 
                 if texture:
                     tA, tB, tC = texCoords
-                    tx = tA.x * w + tB.x * v + tC.x * u
-                    ty = tA.y * w + tB.y * v + tC.y * u
+                    tx = tA.x * w + tB.x * u + tC.x * v
+                    ty = tA.y * w + tB.y * u + tC.y * v
                     
                     color = texture.get_color(tx, ty, intensity)
 
-                z = A.z * w + B.z * v + C.z * u
+                z = A.z * w + B.z * u + C.z * v
 
                 if x < 0 or y < 0:
                     continue
