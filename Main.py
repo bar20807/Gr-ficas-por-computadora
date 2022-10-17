@@ -95,11 +95,11 @@ def DrawPolligons():
     
 
 def Read_Objects():
-    MyRender = Render(1000, 1000)
-    t=Texture('model.bmp')
-    MyRender.lookAt(V3(0,0,1), V3(0,0,0), V3(0,1,0))
-    MyRender.display_obj('model.obj', (512, 500, 0), (400, 400, 500),(0,pi/8,0), texture=t)
-    MyRender.glFinish('MatrixPrueba.bmp')
+    MyRender = Render(2024, 2024)
+    t=Texture('MaskTexture.bmp')
+    MyRender.lookAt(V3(0,0,1), V3(0,0,0),V3(0,1,0))
+    MyRender.display_obj('Mask.obj', translate=(0, 0, 0), scale=(5, 5, 5),rotate=(0,0,pi/6), texture=t)
+    MyRender.glFinish('DutchAngle(DA).bmp')
     
 
 iterador= False

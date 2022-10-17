@@ -7,6 +7,7 @@
 
 """
 import struct as st
+from turtle import width
 from ReadObj import ReadObj
 from Vector import *
 from math import *
@@ -144,11 +145,11 @@ class Render(object):
 
         rotation_matrix = rotation_x * rotation_y * rotation_z
         
-        print("Translation: " + str(translation_matrix))
-        print("Scalation: " + str(scalation_matrix))
-        print("Rotation: " + str(rotation_matrix))
+        #print("Translation: " + str(translation_matrix))
+        #print("Scalation: " + str(scalation_matrix))
+        #print("Rotation: " + str(rotation_matrix))
 
-        print("Imprimiendo las multiplicaciones: " + str(translation_matrix * scalation_matrix * rotation_matrix))
+        #print("Imprimiendo las multiplicaciones: " + str(translation_matrix * scalation_matrix * rotation_matrix))
 
         self.Model = translation_matrix * (rotation_matrix * scalation_matrix)
         
@@ -170,6 +171,28 @@ class Render(object):
 
         self.View = M * O
         
+    def loadProjectionMatrix(self,eye,center):
+        coeff=-1/(eye.length()-center.length())
+        self.Projection = MathMatrix([
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, coeff, 1]
+        ])
+        
+    def loadViewPortMatrix(self):
+        x=0
+        y=0
+        w=self.width/2
+        h=self.height/2
+        self.Viewport = MathMatrix([
+        [w, 0, 0, x + w],
+        [0, h, 0, h + y],
+        [0, 0, 128, 128],
+        [0, 0, 0, 1]
+        ])
+
+        
         #print(self.View)
 
     def lookAt(self, eye, center, up):
@@ -178,6 +201,9 @@ class Render(object):
         y = (z*x).norm()
 
         self.loadViewMatrix(x, y, z, center)
+        self.loadProjectionMatrix(eye,center)
+        self.loadViewPortMatrix()
+        
         
     
     def glCreateWindow(self,width, height):
@@ -196,6 +222,7 @@ class Render(object):
         self.vpY = posY
         self.vpWidth = width
         self.vpHeight = height
+        
 
     def glClearColor(self, r, g, b):
         self.clearColor = color(r,g,b)
@@ -347,7 +374,7 @@ class Render(object):
             [Vertex[2]],
             [1]
         ])
-        transformed_vertex = self.View * self.Model * augmented_vertex
+        transformed_vertex = self.Viewport * self.Projection * self.View * self.Model * augmented_vertex
         #print(transformed_vertex)
         return V3(
             transformed_vertex.getMathMatrix()[0][0]/transformed_vertex.getMathMatrix()[3][0], 
@@ -555,7 +582,13 @@ class Render(object):
                 if x < 0 or y < 0:
                     continue
 
-                if x < len(self.zBuffer) and y < len(self.zBuffer[x]) and z > self.zBuffer[x][y]:
+                if (
+                    x>=0 and
+                    y>=0 and
+                    x < len(self.zBuffer) and 
+                    y < len(self.zBuffer[x]) and 
+                    z > self.zBuffer[x][y]):
+                    
                     self.glPoint(x, y, color)
                     self.zBuffer[x][y] = z
 
