@@ -7,10 +7,12 @@
 
 """
 import struct as st
+from turtle import width
 from ReadObj import ReadObj
 from Vector import *
-
-
+from math import *
+from array import *
+from MathFunctionsMatrix import *
 
 def char(c):
     # 1 byte
@@ -91,6 +93,118 @@ class Render(object):
         self.glCreateWindow(self.width,self.height)
         self.glViewport(0,0,self.width, self.height)
         self.glClear()
+        self.Model= None
+        self.View= None
+
+    def loadModelMatrix(self, translate=(0,0,0), scale =(1,1,1), rotate=(0,0,0)):
+        scale = V3(*scale)
+        translate = V3(*translate)
+        rotate = V3(*rotate)
+
+        translation_matrix = MathMatrix([
+            [1, 0, 0, translate.x],
+            [0, 1, 0, translate.y],
+            [0, 0, 1, translate.z],
+            [0, 0, 0, 1]
+        ])
+
+        scalation_matrix = MathMatrix([
+            [scale.x, 0, 0, 0],
+            [0, scale.y, 0, 0],
+            [0, 0, scale.z, 0],
+            [0, 0, 0, 1]
+        ])
+
+        a_x = rotate.x
+
+        rotation_x = MathMatrix([
+            [1, 0, 0, 0],
+            [0,cos(a_x), -sin(a_x), 0],
+            [0, sin(a_x), cos(a_x), 0],
+            [0, 0, 0, 1]
+        ])
+
+        a_y = rotate.y
+        
+        
+        rotation_y = MathMatrix([
+            [cos(a_y), 0, -sin(a_y), 0],
+            [0, 1, 0, 0],
+            [sin(a_y), 0, cos(a_y), 0],
+            [0, 0, 0, 1]
+        ])
+        
+        a_z = rotate.z
+
+        rotation_z = MathMatrix([
+            [cos(a_z), -sin(a_z), 0, 0],
+            [sin(a_z), cos(a_z), 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
+
+        rotation_matrix = rotation_x * rotation_y * rotation_z
+        
+        #print("Translation: " + str(translation_matrix))
+        #print("Scalation: " + str(scalation_matrix))
+        #print("Rotation: " + str(rotation_matrix))
+
+        #print("Imprimiendo las multiplicaciones: " + str(translation_matrix * scalation_matrix * rotation_matrix))
+
+        self.Model = translation_matrix * (rotation_matrix * scalation_matrix)
+        
+
+    def loadViewMatrix(self, x, y, z, center):
+        M = MathMatrix([
+      [x.x, x.y, x.z,  0],
+      [y.x, y.y, y.z, 0],
+      [z.x, z.y, z.z, 0],
+      [0,     0,   0, 1]
+        ])
+
+        O = MathMatrix([
+        [1, 0, 0, -center.x],
+        [0, 1, 0, -center.y],
+        [0, 0, 1, -center.z],
+        [0, 0, 0, 1]
+        ])
+
+        self.View = M * O
+        
+    def loadProjectionMatrix(self,eye,center):
+        coeff=-1/(eye.length()-center.length())
+        self.Projection = MathMatrix([
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, coeff, 1]
+        ])
+        
+    def loadViewPortMatrix(self):
+        x=0
+        y=0
+        w=self.width/2
+        h=self.height/2
+        self.Viewport = MathMatrix([
+        [w, 0, 0, x + w],
+        [0, h, 0, h + y],
+        [0, 0, 128, 128],
+        [0, 0, 0, 1]
+        ])
+
+        
+        #print(self.View)
+
+    def lookAt(self, eye, center, up):
+        z = (eye - center).norm()
+        x = (up*z).norm()
+        y = (z*x).norm()
+
+        self.loadViewMatrix(x, y, z, center)
+        self.loadProjectionMatrix(eye,center)
+        self.loadViewPortMatrix()
+        
+        
     
     def glCreateWindow(self,width, height):
             if width % 4 == 0 and height % 4 == 0:
@@ -108,6 +222,7 @@ class Render(object):
         self.vpY = posY
         self.vpWidth = width
         self.vpHeight = height
+        
 
     def glClearColor(self, r, g, b):
         self.clearColor = color(r,g,b)
@@ -252,15 +367,23 @@ class Render(object):
                 threshold+=dx*2
                 #print("SOY X DENTRO DE LA CONDICIÓN OFFSET: " + str(x))
     
-    def transform_vertex(self, Vertex, translate, scale):
-        #print("ESTA ES LA ESCALA: ", scale)
+    def transform_vertex(self, Vertex):
+        augmented_vertex=MathMatrix([
+            [Vertex[0]],
+            [Vertex[1]],
+            [Vertex[2]],
+            [1]
+        ])
+        transformed_vertex = self.Viewport * self.Projection * self.View * self.Model * augmented_vertex
+        #print(transformed_vertex)
         return V3(
-            round((Vertex[0]*scale[0]) + translate[0]),
-            round((Vertex[1]*scale[1]) + translate[1]),
-            round((Vertex[2]*scale[2]) + translate[2])
+            transformed_vertex.getMathMatrix()[0][0]/transformed_vertex.getMathMatrix()[3][0], 
+            transformed_vertex.getMathMatrix()[1][0]/transformed_vertex.getMathMatrix()[3][0],
+            transformed_vertex.getMathMatrix()[2][0]/transformed_vertex.getMathMatrix()[3][0]
         )
         
-    def display_obj(self, filename, translate=(0, 0, 0), scale=(1, 1, 1), texture=None):
+    def display_obj(self, filename, translate=(0, 0, 0), scale=(1, 1, 1),rotate=(0,0,0), texture=None):
+        self.loadModelMatrix(translate, scale, rotate)
         dibujo = ReadObj(filename)
         #Hacemos una fuente de luz
         L=V3(0,0,1)
@@ -272,9 +395,9 @@ class Render(object):
                 f2 = face[1][0] - 1
                 f3 = face[2][0] - 1
 
-                a = self.transform_vertex(dibujo.vertices[f1], translate, scale)
-                b = self.transform_vertex(dibujo.vertices[f2], translate, scale)
-                c = self.transform_vertex(dibujo.vertices[f3], translate, scale)
+                a = self.transform_vertex(dibujo.vertices[f1])
+                b = self.transform_vertex(dibujo.vertices[f2])
+                c = self.transform_vertex(dibujo.vertices[f3])
                 
                 
                 #Calculamos la normal para todo el triangulo
@@ -313,10 +436,10 @@ class Render(object):
                 f4 = face[3][0] - 1   
 
                 vertices = [
-                    self.transform_vertex(dibujo.vertices[f1], translate, scale),
-                    self.transform_vertex(dibujo.vertices[f2], translate, scale),
-                    self.transform_vertex(dibujo.vertices[f3], translate, scale),
-                    self.transform_vertex(dibujo.vertices[f4], translate, scale)
+                    self.transform_vertex(dibujo.vertices[f1]),
+                    self.transform_vertex(dibujo.vertices[f2]),
+                    self.transform_vertex(dibujo.vertices[f3]),
+                    self.transform_vertex(dibujo.vertices[f4])
                 ]
                 
                 #Calculamos la normal para todo el triangulo
@@ -385,7 +508,7 @@ class Render(object):
     def drawPolygon(self, polygon, clr=None):
         for i in range(100):
             for idx, (x, y) in enumerate(polygon):
-                polygon[idx] = V(x,y)
+                polygon[idx] = V3(x,y)
 
         for i in range(len(polygon)):
             self.line(polygon[i], polygon[(i - 1) %
@@ -441,29 +564,35 @@ class Render(object):
         
         bbox_min, bbox_max = bounding_box(A, B, C)
 
-        for x in range(bbox_min.x, bbox_max.x + 1):
-            for y in range(bbox_min.y, bbox_max.y + 1):
+        for x in range(round(bbox_min.x), round(bbox_max.x) + 1):
+            for y in range(round(bbox_min.y), round(bbox_max.y) + 1):
                 w, v, u = barycentric(A, B, C, V3(x, y))
                 if w < 0 or v < 0 or u < 0:
                     continue
                 
                 if texture:
                     tA, tB, tC = texCoords
-                    tx = tA.x * w + tB.x * v + tC.x * u
-                    ty = tA.y * w + tB.y * v + tC.y * u
+                    tx = tA.x * w + tB.x * u + tC.x * v
+                    ty = tA.y * w + tB.y * u + tC.y * v
                     
                     color = texture.get_color(tx, ty, intensity)
 
-                z = A.z * w + B.z * v + C.z * u
+                z = A.z * w + B.z * u + C.z * v
 
                 if x < 0 or y < 0:
                     continue
 
-                if x < len(self.zBuffer) and y < len(self.zBuffer[x]) and z > self.zBuffer[x][y]:
+                if (
+                    x>=0 and
+                    y>=0 and
+                    x < len(self.zBuffer) and 
+                    y < len(self.zBuffer[x]) and 
+                    z > self.zBuffer[x][y]):
+                    
                     self.glPoint(x, y, color)
                     self.zBuffer[x][y] = z
 
-                
+                 
     #AREA FINAL DONDE SE ESCRIBE EL ARCHIVO
     def glFinish(self, filename):
         f=open(filename, 'bw')
@@ -496,3 +625,9 @@ class Render(object):
                 f.write(self.framebuffer[y][x])
                 
         f.close()
+        
+        
+        
+    
+    
+        
