@@ -18,9 +18,7 @@ class Sphere(object):
         l=L.length()
         
         #print("Valor de l: ", l)
-        print("Valor de tca: ", tca)
-        print("Valor de radius: ", self.radius)
-        
+ 
         d2 = l**2 - tca**2
         
         #Si d^2 es mayor al radio de la esfera se retorna falso
@@ -34,9 +32,9 @@ class Sphere(object):
         t1=tca + thc
         
         #Miramos si queda afuera de la esfera
-        if t0<0:
-            t0=t1
-        if t0>0:
+        if t0 < 0: 
+            t0 = t1 
+        if t0 < 0:  
             return False
         
         return True
