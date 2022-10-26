@@ -1,15 +1,19 @@
 from cmath import pi, tan
 from GL_library import *
-from Vector import * 
+from Vector import *
+from light import Light 
 from sphere import *
+from material import *
+from color import *
 
 class RayTracer(object):
     def __init__(self, width, height):
         self.width = width
         self.height=height
-        self.clear_color = color(0,0,0)
-        self.current_color=color(1,1,1)
+        self.clear_color = Color(0,0,0) #Background color
+        self.current_color=Color(255,255,255)
         self.scene=[]
+        self.light = Light(position=V3(0,0,0),intensity=1)
         self.clear()
         
     def clear(self):
@@ -18,7 +22,7 @@ class RayTracer(object):
         
     def point(self,x,y,color=None):
         if y >= 0 and y < self.height and x >= 0 and x < self.width:
-            self.framebuffer[x][y] = color or self.current_color
+            self.framebuffer[y][x] = color or self.current_color
             
     def write(self, filename):
         Render.glFinish(self,filename)
@@ -38,14 +42,42 @@ class RayTracer(object):
                 self.point(x,y,c)
         
     def cast_ray(self, origin, direction):
-        #s=Sphere(V3(-3,0,-16), 2)
-        for o,color in self.scene:
-            #Vemos si la esfera intersecta con la dirección y origen de la esfera
-            #print("Valor arrojado por ray_intersect: ", s.ray_intersect(origin, direction))
-            if o.ray_intersect(origin, direction):
-                #print("color rojo")
-                return color
-        return self.clear_color
+        material, intersect = self.scene_intersect(origin, direction)
+        
+        if material is None:
+            return self.clear_color
+        
+        light_dir = (self.light.position - intersect.point).norm()
+        intensity = light_dir @ intersect.normal
+       
+        return material.diffuse * intensity
+    
+    def scene_intersect(self, origin, direction):
+        zbuffer = 999999
+        material = None
+        intersect = None
+        for o in self.scene:
+            object_intersect= o.ray_intersect(origin, direction)
+            if object_intersect:
+                if object_intersect.distance < zbuffer:
+                    zbuffer=object_intersect.distance
+                    material = o.material
+                    intersect = object_intersect
+        return material, intersect
+
+#Probando la clase material
+red = Material(diffuse=Color(255,0,0))
+white = Material(diffuse=Color(255,255,0))
+           
+r = RayTracer(800, 600)
+r.light = Light(position=V3(0,0,0),intensity=1)
+r.scene = [
+    Sphere(V3(-3,0,-16),2,red),
+    Sphere(V3(2.8,0,-10),2,white)]
+r.render()
+r.write('scene_intersect_prueba.bmp')
+        
+        
 
 
     
