@@ -101,14 +101,18 @@ def Read_Objects():
     MyRender.display_obj('Mask.obj', translate=(0, 0, 0), scale=(5, 5, 5),rotate=(0,0,pi/6), texture=t)
     MyRender.glFinish('DutchAngle(DA).bmp')
     
-
+def Planet():
+    MyRender = Render(600, 600)
+    MyRender.load_shaders("sphere.obj", tras=(370, 395, 0), size=(280, 280, 280), shape='Jupiter')
+    MyRender.glFinish(filename="Jupiter.bmp")
+    
 iterador= False
 opciones= 0
 
 while not iterador:
     
     print("-+-+-+-+-+-+-+-+-+-+-+-+-+ BIENVENIDO A MI RENDER -+-+-+-+-+-+-+-+-+-+-+-+-+")
-    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Dibujar una casa utilizando glLine \n 4) Dibujar poligonos \n 5) Renderizar un modelo \n 6) Salir")
+    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Dibujar una casa utilizando glLine \n 4) Dibujar poligonos \n 5) Renderizar un modelo \n 6) Planeta con Shaders \n 7) Salir")
     opciones= int(input("\n Elige una de las siguientes opciones: "))
     
     
@@ -143,10 +147,10 @@ while not iterador:
         elif opciones==5:
             Read_Objects()
         elif opciones==6:
-            iterador=True
-            print("Gracias por usar mi renderer")
-            
-            
+            Planet()
+        elif opciones==7:
+            iterador= True
+            print("Gracias por usar mi render")
             
     except Exception as e:
         print( e + "\nUsted ingresó un carecter no válido... Intente de nuevo")

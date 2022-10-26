@@ -6,6 +6,7 @@ class ReadObj(object):
             self.lines=f.read().splitlines()
         self.vertices=[]
         self.tvertices=[]
+        self.normals = []
         self.faces=[]
         
         for line in self.lines:
@@ -33,6 +34,15 @@ class ReadObj(object):
                         )
                     )
                 )
+            
+            if prefix == 'vn':
+                self.normals.append(
+                    list(
+                    map(
+                        float, value.strip().split(' ')
+                        )
+                    )
+                ) 
             if prefix == 'f':
                 try: 
                     self.faces.append(
