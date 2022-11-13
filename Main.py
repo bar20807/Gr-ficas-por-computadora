@@ -105,14 +105,24 @@ def Planet():
     MyRender = Render(600, 600)
     MyRender.load_shaders("sphere.obj", tras=(370, 395, 0), size=(280, 280, 280), shape='Jupiter')
     MyRender.glFinish(filename="Jupiter.bmp")
-    
+
+def Proyecto1():
+    MyRender = Render(2024, 2024)
+    t1=Texture('./Proyecto1/Mask1Texture.bmp')
+    MyRender.lookAt(V3(0,0,1), V3(0,0,0),V3(0,1,0))
+    MyRender.display_obj('./Proyecto1/Mask1.obj', translate=(0, 0.6, 0), scale=(3, 3, 5),rotate=(0,0,0), texture=t1)
+    t2=Texture('./Proyecto1/Mask2Texture.bmp')
+    MyRender.display_obj('./Proyecto1/Mask2.obj', translate=(-0.6, 0.4, 0), scale=(3, 3, 5),rotate=(0,0,0), texture=t2)
+    t3=Texture('./Proyecto1/Mask3Texture.bmp')
+    MyRender.display_obj('./Proyecto1/Mask3.obj', translate=(0, 0, 0), scale=(30, 30, 50),rotate=(0,0,0), texture=t3)
+    MyRender.glFinish('Proyecto1.bmp')
 iterador= False
 opciones= 0
 
 while not iterador:
     
     print("-+-+-+-+-+-+-+-+-+-+-+-+-+ BIENVENIDO A MI RENDER -+-+-+-+-+-+-+-+-+-+-+-+-+")
-    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Dibujar una casa utilizando glLine \n 4) Dibujar poligonos \n 5) Renderizar un modelo \n 6) Planeta con Shaders \n 7) Salir")
+    print("\n 1) Mostrar SR1 \n 2) Mostrar SR2" "\n 3) Dibujar una casa utilizando glLine \n 4) Dibujar poligonos \n 5) Renderizar un modelo \n 6) Planeta con Shaders \n 7) Proyecto \n 8) Salir ")
     opciones= int(input("\n Elige una de las siguientes opciones: "))
     
     
@@ -149,6 +159,8 @@ while not iterador:
         elif opciones==6:
             Planet()
         elif opciones==7:
+            Proyecto1()
+        elif opciones==8:
             iterador= True
             print("Gracias por usar mi render")
             
