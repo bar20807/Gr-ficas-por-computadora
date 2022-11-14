@@ -107,15 +107,20 @@ def Planet():
     MyRender.glFinish(filename="Jupiter.bmp")
 
 def Proyecto1():
-    MyRender = Render(2024, 2024)
+    MyRender = Render(1024, 1024)
+    MyRender.glClearViewport(color(0,0,0))
     t1=Texture('./Proyecto1/Mask1Texture.bmp')
     MyRender.lookAt(V3(0,0,1), V3(0,0,0),V3(0,1,0))
     MyRender.display_obj('./Proyecto1/Mask1.obj', translate=(0, 0.6, 0), scale=(3, 3, 5),rotate=(0,0,0), texture=t1)
     t2=Texture('./Proyecto1/Mask2Texture.bmp')
     MyRender.display_obj('./Proyecto1/Mask2.obj', translate=(-0.6, 0.4, 0), scale=(3, 3, 5),rotate=(0,0,0), texture=t2)
-    t3=Texture('./Proyecto1/Mask3Texture.bmp')
-    MyRender.display_obj('./Proyecto1/Mask3.obj', translate=(0.2, 0, 0), scale=(30, 30, 50),rotate=(0,0,0), texture=t3)
+    t3=Texture('./Proyecto1/Mask2Texture.bmp')
+    MyRender.display_obj('./Proyecto1/Mask2.obj', translate=(0.6, 0.4, 0), scale=(3, 3, 5),rotate=(0,0,0), texture=t3)
+    t4=Texture('./Proyecto1/VF_Coffee_Table_Textures_BaseColor.bmp')
+    MyRender.display_obj('./Proyecto1/Vintage_Furniture_Coffee_Table_OBJ.obj', translate=(0, 0, 0), scale=(100, 100, 120),rotate=(0,0,0), texture=t4)
+    print("Posición final")
     MyRender.glFinish('Proyecto1.bmp')
+
 iterador= False
 opciones= 0
 
