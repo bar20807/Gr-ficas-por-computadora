@@ -54,6 +54,10 @@ def drawing_a_bears():
     r.point(100, 100)
     r.render()
     r.write('RT2.bmp')
+
+def Proyecto2():
+    return ""
+    
     
 iterador= False
 opciones= 0
@@ -71,8 +75,7 @@ while not iterador:
         elif opciones == 2:
             drawing_a_bears()          
         elif opciones == 3:
-            iterador= True
-        
+            Proyecto2() 
         elif opciones==4:
             iterador= True
             print("Gracias por usar mi raytracer")
