@@ -114,7 +114,7 @@ def Proyecto1():
     t2=Texture('./Proyecto1/Mask2Texture.bmp')
     MyRender.display_obj('./Proyecto1/Mask2.obj', translate=(-0.6, 0.4, 0), scale=(3, 3, 5),rotate=(0,0,0), texture=t2)
     t3=Texture('./Proyecto1/Mask3Texture.bmp')
-    MyRender.display_obj('./Proyecto1/Mask3.obj', translate=(0, 0, 0), scale=(30, 30, 50),rotate=(0,0,0), texture=t3)
+    MyRender.display_obj('./Proyecto1/Mask3.obj', translate=(0.2, 0, 0), scale=(30, 30, 50),rotate=(0,0,0), texture=t3)
     MyRender.glFinish('Proyecto1.bmp')
 iterador= False
 opciones= 0
