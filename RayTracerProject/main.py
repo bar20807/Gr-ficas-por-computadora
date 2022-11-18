@@ -26,30 +26,30 @@ def drawing_a_bears():
     r.light = Light(V3(-4, -4, 0), 1, Color(255,255,255))
 
     r.scene = [
-        Sphere(V3(-3, -1.65, -14), 1.65, Material(diffuse=Color(135, 70, 20))), #Cabeza
-        Sphere(V3(3, -1.65, -14), 1.65, Material(diffuse=Color(135, 70, 20))), #Cabeza
-        Sphere(V3(-4.6, 0.7, -12.2), 1, Material(diffuse=Color(135, 70, 20))), #Mano
-        Sphere(V3(-1, 0.7, -13), 1, Material(diffuse=Color(135, 70, 20))), #Mano
-        Sphere(V3(-3.7, -3, -12.7), 0.7, Material(diffuse=Color(135, 70, 20))), #Oreja
-        Sphere(V3(-2, -3, -13), 0.7, Material(diffuse=Color(135, 70, 20))), #Oreja
-        Sphere(V3(-2.5, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0))), #Nariz punto
-        Sphere(V3(-1.8, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0))), #Ojo
-        Sphere(V3(2.5, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0))), #Ojo
-        Sphere(V3(1.8, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0))) , #Ojo
-        Sphere(V3(-2.2, -0.78, -10), 0.2, Material(diffuse=Color(0, 0, 0))), #Ojo
-        Sphere(V3(2.2, -0.78, -10), 0.2, Material(diffuse=Color(0, 0, 0))),  #Nariz punto
-        Sphere(V3(-3.6, 3.3, -12.1), 1, Material(diffuse=Color(135, 70, 20))), #Pie
-        Sphere(V3(-1.7, 3.3, -12.4), 1, Material(diffuse=Color(135, 70, 20))), #Pie
-        Sphere(V3(4.2, 0.7, -12.2), 1, Material(diffuse=Color(135, 70, 20))), #Mano
-        Sphere(V3(1, 0.7, -12.6), 1, Material(diffuse=Color(135, 70, 20))), #Mano
-        Sphere(V3(3.6, -3, -12.7), 0.7, Material(diffuse=Color(135, 70, 20))), #Oreja
-        Sphere(V3(2, -3, -13), 0.7, Material(diffuse=Color(135, 70, 20))), #Oreja
-        Sphere(V3(1.6, 3.15, -12.1), 0.95, Material(diffuse=Color(135, 70, 20))), #Pie
-        Sphere(V3(3.6, 3.1, -12), 0.95, Material(diffuse=Color(135, 70, 20))), #Pie
-        Sphere(V3(-2.8, -0.82, -13), 0.8, Material(diffuse=Color(199, 144, 90))), #Nariz
-        Sphere(V3(2.8, -0.82, -13), 0.8, Material(diffuse=Color(199, 144, 90))), #Nariz
-        Sphere(V3(-3, 2, -14), 2.35, Material(diffuse=Color(135, 70, 20))), #Cuerpo
-        Sphere(V3(3, 2, -14), 2.35, Material(diffuse=Color(135, 70, 20))), #Cuerpo
+        Sphere(V3(-3, -1.65, -14), 1.65, Material(diffuse=Color(135, 70, 20), albedo=[0.8, 0.2], spec=30)), #Cabeza
+        Sphere(V3(3, -1.65, -14), 1.65, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Cabeza
+        Sphere(V3(-4.6, 0.7, -12.2), 1, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Mano
+        Sphere(V3(-1, 0.7, -13), 1, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Mano
+        Sphere(V3(-3.7, -3, -12.7), 0.7, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Oreja
+        Sphere(V3(-2, -3, -13), 0.7, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Oreja
+        Sphere(V3(-2.5, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0),albedo=[0.8, 0.2], spec=30)), #Nariz punto
+        Sphere(V3(-1.8, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0),albedo=[0.8, 0.2], spec=30)), #Ojo
+        Sphere(V3(2.5, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0),albedo=[0.8, 0.2], spec=30)), #Ojo
+        Sphere(V3(1.8, -1.5, -10), 0.2, Material(diffuse=Color(0, 0, 0),albedo=[0.8, 0.2], spec=30)) , #Ojo
+        Sphere(V3(-2.2, -0.78, -10), 0.2, Material(diffuse=Color(0, 0, 0),albedo=[0.8, 0.2], spec=30)), #Ojo
+        Sphere(V3(2.2, -0.78, -10), 0.2, Material(diffuse=Color(0, 0, 0),albedo=[0.8, 0.2], spec=30)),  #Nariz punto
+        Sphere(V3(-3.6, 3.3, -12.1), 1, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Pie
+        Sphere(V3(-1.7, 3.3, -12.4), 1, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Pie
+        Sphere(V3(4.2, 0.7, -12.2), 1, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Mano
+        Sphere(V3(1, 0.7, -12.6), 1, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Mano
+        Sphere(V3(3.6, -3, -12.7), 0.7, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Oreja
+        Sphere(V3(2, -3, -13), 0.7, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Oreja
+        Sphere(V3(1.6, 3.15, -12.1), 0.95, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Pie
+        Sphere(V3(3.6, 3.1, -12), 0.95, Material(diffuse=Color(135, 70, 20),albedo=[0.8, 0.2], spec=30)), #Pie
+        Sphere(V3(-2.8, -0.82, -13), 0.8, Material(diffuse=Color(199, 144, 90), albedo=[0.8, 0.2], spec=30)), #Nariz
+        Sphere(V3(2.8, -0.82, -13), 0.8, Material(diffuse=Color(199, 144, 90), albedo=[0.8, 0.2], spec=30)), #Nariz
+        Sphere(V3(-3, 2, -14), 2.35, Material(diffuse=Color(135, 70, 20), albedo=[0.8, 0.2], spec=30)), #Cuerpo
+        Sphere(V3(3, 2, -14), 2.35, Material(diffuse=Color(135, 70, 20), albedo=[0.8, 0.2], spec=30)), #Cuerpo
     ]
     r.point(100, 100)
     r.render()

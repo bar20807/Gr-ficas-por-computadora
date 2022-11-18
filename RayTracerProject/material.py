@@ -2,7 +2,9 @@ from msilib.schema import Class
 
 
 class Material(object):
-    def __init__(self, diffuse):
+    def __init__(self, diffuse, albedo, spec):
         self.diffuse = diffuse
+        self.albedo = albedo
+        self.spec = spec
         
         

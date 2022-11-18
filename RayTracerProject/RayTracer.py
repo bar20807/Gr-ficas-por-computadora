@@ -6,6 +6,9 @@ from sphere import *
 from material import *
 from color import *
 
+def reflect(I, N): 
+    return (I - N * 2 * (N @ I)).norm()
+
 class RayTracer(object):
     def __init__(self, width, height):
         self.width = width
@@ -42,15 +45,25 @@ class RayTracer(object):
                 self.point(x,y,c)
         
     def cast_ray(self, origin, direction):
+        
         material, intersect = self.scene_intersect(origin, direction)
         
         if material is None:
             return self.clear_color
         
         light_dir = (self.light.position - intersect.point).norm()
-        intensity = light_dir @ intersect.normal
+        
+        # Diffuse component
+        diffuse_intensity = light_dir @ intersect.norm()
+        diffuse = material.diffuse * diffuse_intensity * material.albedo[0]
        
-        return material.diffuse * intensity
+        # Specular component
+        light_reflection = reflect(light_dir, intersect.norm())
+        reflection_intensity = max(0, (light_reflection @ direction))
+        specular_intensity = self.light.intensity * (reflection_intensity ** material.spec)
+        specular = self.light.color * specular_intensity * material.albedo[1]
+
+        return diffuse + specular
     
     def scene_intersect(self, origin, direction):
         zbuffer = 999999
