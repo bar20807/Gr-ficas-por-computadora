@@ -54,11 +54,11 @@ class RayTracer(object):
         light_dir = (self.light.position - intersect.point).norm()
         
         # Diffuse component
-        diffuse_intensity = light_dir @ intersect.norm()
+        diffuse_intensity = light_dir @ intersect.normal
         diffuse = material.diffuse * diffuse_intensity * material.albedo[0]
        
         # Specular component
-        light_reflection = reflect(light_dir, intersect.norm())
+        light_reflection = reflect(light_dir, intersect.normal)
         reflection_intensity = max(0, (light_reflection @ direction))
         specular_intensity = self.light.intensity * (reflection_intensity ** material.spec)
         specular = self.light.color * specular_intensity * material.albedo[1]
@@ -79,16 +79,16 @@ class RayTracer(object):
         return material, intersect
 
 #Probando la clase material
-red = Material(diffuse=Color(255,0,0))
-white = Material(diffuse=Color(255,255,0))
+# red = Material(diffuse=Color(255,0,0))
+# white = Material(diffuse=Color(255,255,0))
            
-r = RayTracer(800, 600)
-r.light = Light(position=V3(0,0,0),intensity=1)
-r.scene = [
-    Sphere(V3(-3,0,-16),2,red),
-    Sphere(V3(2.8,0,-10),2,white)]
-r.render()
-r.write('scene_intersect_prueba.bmp')
+# r = RayTracer(800, 600)
+# r.light = Light(position=V3(0,0,0),intensity=1)
+# r.scene = [
+#     Sphere(V3(-3,0,-16),2,red),
+#     Sphere(V3(2.8,0,-10),2,white)]
+# r.render()
+# r.write('scene_intersect_prueba.bmp')
         
         
 
