@@ -17,11 +17,8 @@ class Plane(object):
         if abs(denom) > 0.0001:
             t = (self.normal @ (self.position - orig)) / denom
             if t > 0:
-                # P = O + tD
                 hit = orig + (dir*t)
-
                 return Intersect(distance = t,
                                  point = hit,
                                  normal = self.normal)
-
         return None
