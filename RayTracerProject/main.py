@@ -49,7 +49,7 @@ def drawing_a_bears():
         Sphere(V3(-2.8, -0.82, -13), 0.8, Material(diffuse=Color(199, 144, 90), albedo=[0.8, 0.2], spec=30)), #Nariz
         Sphere(V3(2.8, -0.82, -13), 0.8, Material(diffuse=Color(199, 144, 90), albedo=[0.8, 0.2], spec=30)), #Nariz
         Sphere(V3(-3, 2, -14), 2.35, Material(diffuse=Color(135, 70, 20), albedo=[0.8, 0.2], spec=30)), #Cuerpo
-        Sphere(V3(3, 2, -14), 2.35, Material(diffuse=Color(135, 70, 20), albedo=[0.8, 0.2], spec=29)), #Cuerpo
+        Sphere(V3(3, 2, -14), 2.35, Material(diffuse=Color(135, 70, 20), albedo=[0.8, 0.2], spec=30)), #Cuerpo
     ]
     r.point(100, 100)
     r.render()
