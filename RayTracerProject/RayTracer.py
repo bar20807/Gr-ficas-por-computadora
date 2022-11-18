@@ -45,7 +45,7 @@ class RayTracer(object):
         self.current_color=Color(255,255,255)
         self.scene=[]
         self.envmap = None
-        self.ambientLight = None
+        self.light = Light(V3(0, 0, 0), 2, color(255,255,255))
         self.clear()
         
     def clear(self):
