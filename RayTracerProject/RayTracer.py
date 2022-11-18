@@ -7,7 +7,6 @@ from material import *
 from color import *
 from plane import *
 from envmap import *
-from ambientLight import *
 
 #Funciones y variables de utilidad
 MAX_RECURSION_DEPTH = 3
@@ -45,7 +44,7 @@ class RayTracer(object):
         self.current_color=Color(255,255,255)
         self.scene=[]
         self.envmap = None
-        self.light = Light(V3(0, 0, 0), 2, color(255,255,255))
+        self.light = Light(V3(0, 0, 0), 2, Color(255,255,255))
         self.clear()
         
     def clear(self):
@@ -120,7 +119,7 @@ class RayTracer(object):
         
         # Refraction
         if material.albedo[3] > 0:
-            refract_direction = refract(direction, intersect.normal, material.refractive_index)
+            refract_direction = refract(direction, intersect.normal, material.refractionIndex)
             refract_bias = -0.5 if ((refract_direction @ intersect.normal) < 0) else 0.5
             refract_origin = intersect.point + (intersect.normal * refract_bias) 
             refract_color = self.cast_ray(refract_origin, refract_direction, recursion + 1)
@@ -161,13 +160,11 @@ class RayTracer(object):
 #Probando el envmap y el plano
 r = RayTracer(800, 800)
 r.envmap = Envmap('./envmap.bmp')
-r.light = Light(V3(-10, 10, 1), 1, Color(255, 255, 255))
+r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
 
 r.scene = [
-    Sphere(V3(0, -1.5, -10), 1.5, Material(diffuse=Color(160,129,129), albedo=[0.6, 0.3, 0.1, 0], spec=50)),
-    Sphere(V3(0, 0, -6), 0.5, Material(diffuse=Color(160,129,129), albedo=[0.6, 0.3, 0.1, 0], spec=50)),
-    Sphere(V3(1, 1, -8), 1.7, Material(diffuse=Color(160,129,129), albedo=[0.6, 0.3, 0.1, 0], spec=50)),
-    Sphere(V3(-2, 1, -10), 2, Material(diffuse=Color(160,129,129), albedo=[0.6, 0.3, 0.1, 0], spec=50)),
+    Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
+    Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=2))
 ]
 
 r.render()
