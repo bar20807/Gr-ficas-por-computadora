@@ -1,10 +1,11 @@
-from cmath import *
 import struct
 from GL_library import *
 from Vector import *
 from sphere import *
 from material import *
 from color import *
+from math import *
+import struct
 
 class Envmap(object):
     def __init__(self, path):
@@ -12,36 +13,33 @@ class Envmap(object):
         self.read()
         
     def read(self):
-        image = open(self.path, 'rb')
-        image.seek(10)
-        headerSize = struct.unpack('=l', image.read(4))[0]
+        with open(self.path, "rb") as image:
+            image.seek(2 + 4 + 2 + 2)
+            header_size = struct.unpack("=l", image.read(4))[0]    
+            image.seek(2 + 4 + 2 + 2 + 4 + 4)
+            self.width = struct.unpack("=l", image.read(4))[0]    
+            self.height = struct.unpack("=l", image.read(4))[0]    
+            
+            image.seek(header_size)
+            
+            self.pixels = []
+            for y in range(self.height):
+                self.pixels.append([])
+                for x in range(self.width):
+                    b = ord(image.read(1))
+                    g = ord(image.read(1))
+                    r = ord(image.read(1))
+                    self.pixels[y].append(
+                        Color(r, g, b)
+                    )
+    
+    def getColor(self, dir):
+        normalized_direction = dir.norm()
+        x = round(((atan2(normalized_direction.z, normalized_direction.x) / (2 * pi)) + 0.5) * self.width)
+        y = (-1 * round((acos((-1 * normalized_direction.y)) / pi) * self.height))
 
-        image.seek(14 + 4)
-        self.width = struct.unpack('=l', image.read(4))[0]
-        self.height = struct.unpack('=l', image.read(4))[0]
-        image.seek(headerSize)
+        x -= 1 if (x > 0) else 0
+        y -= 1 if (y > 0) else 0
 
-        self.pixels = []
-
-        for y in range(self.height):
-            self.pixels.append([])
-            for x in range(self.width):
-                b = ord(image.read(1))
-                g = ord(image.read(1))
-                r = ord(image.read(1))
-                self.pixels[y].append(Color(r,g,b))
-
-        image.close()
-
-    def getColor(self, direction):
-
-        direction = direction.norm()
-
-        x = int( (atan2( direction[2], direction[0]) / (2 * pi) + 0.5) * self.width)
-        y = int( acos(-direction[1]) / pi * self.height )
-        
-        #print(x, y)
-        if x < self.width and y < self.height:
-            return self.pixels[y][x]
-        else:
-            return Color(0, 0, 0)
+        return self.pixels[y][x]
+            

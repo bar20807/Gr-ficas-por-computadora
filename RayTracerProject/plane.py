@@ -7,21 +7,23 @@ from material import *
 from color import *
 
 class Plane(object):
-    def __init__(self, y, material):
-        self.y = y
+    def __init__(self, position, normal, material):
+        self.position = position
+        self.normal =  normal.norm()
         self.material = material
 
-    def ray_intersect(self, orig, direction):
-        d = -(orig.y + self.y) / direction.y
-        pt = orig + (direction * d)
+    def ray_intersect(self, orig, dir):
+        # t = (( position - origRayo) dot normal) / (dirRayo dot normal)
+        denom = dir @ self.normal
 
-        if d <= 0 or abs(pt.x) > 2 or pt.z > -5 or pt.z < -10:
-            return None
+        if abs(denom) > 0.0001:
+            t = (self.normal @ (self.position - orig)) / denom
+            if t > 0:
+                # P = O + tD
+                hit = orig + (dir*t)
 
-        normal = V3(0, 1, 0)
+                return Intersect(distance = t,
+                                 point = hit,
+                                 normal = self.normal)
 
-        return Intersect(
-        distance=d,
-        point=pt,
-        normal=normal
-        )
+        return None
