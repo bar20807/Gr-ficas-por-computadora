@@ -7,6 +7,7 @@ from material import *
 from color import *
 from plane import *
 from envmap import *
+#from Cube import *
 
 #Funciones y variables de utilidad
 MAX_RECURSION_DEPTH = 3
@@ -158,17 +159,18 @@ class RayTracer(object):
         
         
 #Probando el envmap y el plano
-r = RayTracer(800, 800)
-r.envmap = Envmap('./envmap.bmp')
-r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
+# r = RayTracer(800, 800)
+# r.envmap = Envmap('./envmap.bmp')
+# r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
 
-r.scene = [
-    Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
-    Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=2))
-]
+# r.scene = [
+#     Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
+#     Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=2))
+# ]
 
-r.render()
-r.write('TestEnvmapPlane.bmp')
+# r.render()
+# r.write('TestEnvmapPlane.bmp')
 
     
-        
+#Probando las piramides
+# r = RayTracer(800, 800)
