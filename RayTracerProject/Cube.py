@@ -7,7 +7,6 @@ from material import *
 from color import *
 from plane import *
 from envmap import *
-from Pyramid import *
 
 """
     Referencias para armar la lógica del cubo:
