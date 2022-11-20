@@ -7,10 +7,12 @@ from material import *
 from color import *
 from plane import *
 from envmap import *
-#from Cube import *
+from Pyramid import *
+from Cube import *
 
 #Funciones y variables de utilidad
 MAX_RECURSION_DEPTH = 3
+
 
 def reflect(I, N): 
     return (I - N * 2 * (N @ I)).norm()
@@ -28,6 +30,7 @@ def refract(I, N, roi):
         N *= -1
 
     eta = etai/etat
+    
     k = (1 - ((eta ** 2) * (1 - (cosi ** 2))))
     
     if k < 0:
@@ -174,3 +177,24 @@ class RayTracer(object):
     
 #Probando las piramides
 # r = RayTracer(800, 800)
+# r.envmap = Envmap('./envmap.bmp')
+# r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
+
+# r.scene = [
+#     Pyramid([(3, -1.4, -8.5), (1.9, -0.1, -8.5), (0.8, -1.4, -8.5), (2.5, -1, -10)], Material(diffuse = color(0.259, 0.412, 0.184),albedo=[0.7, 0.4, 0.2, 0], spec = 16))
+# ]
+
+# r.render()
+# r.write('PyramidTest.bmp')
+
+#Probando los cubos
+# r = RayTracer(800, 800)
+# r.envmap = Envmap('./envmap.bmp')
+# r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
+
+# r.scene = [
+#     Cubo(V3(0, 0, -7),2, Material(diffuse=Color(160,170,210), albedo = [0,0.6,0,0.9], spec = 126, refractionIndex=2))
+# ]
+
+# r.render()
+# r.write('CubeTest.bmp')
