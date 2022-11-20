@@ -7,7 +7,6 @@ from material import *
 from color import *
 from plane import *
 from envmap import *
-from Pyramid import *
 from Cube import *
 
 #Funciones y variables de utilidad
