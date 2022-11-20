@@ -174,17 +174,17 @@ class RayTracer(object):
 # r.write('TestEnvmapPlane.bmp')
 
 #Probando el plano
-r = RayTracer(800, 800)
-r.envmap = Envmap('./envmap.bmp')
-r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
+# r = RayTracer(800, 800)
+# r.envmap = Envmap('./envmap.bmp')
+# r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
 
-r.scene = [
-    Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
-    Plane(V3(0, 2.2, -5), 2,2, Material(diffuse=Color(255,255,255), albedo=[0, 1, 0.8, 0], spec=1425))
-]
+# r.scene = [
+#     Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
+#     Plane(V3(0, 2.2, -5), 2,2, Material(diffuse=Color(255,255,255), albedo=[0, 1, 0.8, 0], spec=1425))
+# ]
 
-r.render()
-r.write('TestPlane.bmp')
+# r.render()
+# r.write('TestPlane.bmp')
     
 #Probando las piramides
 # r = RayTracer(800, 800)
