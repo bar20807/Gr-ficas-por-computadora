@@ -1,7 +1,5 @@
-from cmath import pi, tan
 from GL_library import *
 from Vector import *
-from light import Light 
 from sphere import *
 from material import *
 from color import *

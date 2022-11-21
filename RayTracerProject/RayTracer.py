@@ -9,6 +9,7 @@ from plane import *
 from envmap import *
 from Cube import *
 from Triangle import * 
+from Pyramid import * 
 
 #Funciones y variables de utilidad
 MAX_RECURSION_DEPTH = 3
@@ -188,16 +189,28 @@ class RayTracer(object):
 # r.write('TestPlane.bmp')
     
 #Probando los triangulos
-r = RayTracer(800, 800)
-r.envmap = Envmap('./envmap.bmp')
-r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
+# r = RayTracer(800, 800)
+# r.envmap = Envmap('./envmap.bmp')
+# r.light = Light(V3(-20, 20, 20), 1.5, Color(255, 255, 255))
 
-r.scene = [
-    Triangle(V3(-0.1, 0, -1), V3(-0.1, 0.25, -1), V3(0, -0.001, -1), Material(diffuse=Color(139, 69, 19), albedo=[1, 0.2, 0.2, 0.3], spec=10,refractionIndex=1))
-]
+# r.scene = [
+#     Triangle(V3(-0.1, 0, -1), V3(-0.1, 0.25, -1), V3(0, -0.001, -1), Material(diffuse=Color(187,13,13), albedo=[0.9, 0.1, 0, 0], spec=10))
+# ]
 
-r.render()
-r.write('TriangleTest.bmp')
+# r.render()
+# r.write('TriangleTest.bmp')
+
+#Probando las pirámides
+# r = RayTracer(800, 800)
+# r.envmap = Envmap('./envmap.bmp')  
+# r.light = Light(V3(0, 0, -50), 4, Color(255, 255, 255))
+
+# r.scene = [
+#     Pyramid([V3(2, 0, -11), V3(0, -3, -11), V3(-3, 0, -11), V3(3, 0, -11)], Material(diffuse=Color(255,0,0), albedo=[1, 0.2, 0, 0], spec=10))
+# ]
+
+# r.render()
+# r.write('PyramidTest.bmp')
 
 #Probando los cubos
 # r = RayTracer(800, 800)
