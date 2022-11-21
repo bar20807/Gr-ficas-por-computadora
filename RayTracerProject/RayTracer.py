@@ -8,6 +8,7 @@ from color import *
 from plane import *
 from envmap import *
 from Cube import *
+from Triangle import * 
 
 #Funciones y variables de utilidad
 MAX_RECURSION_DEPTH = 3
@@ -186,17 +187,17 @@ class RayTracer(object):
 # r.render()
 # r.write('TestPlane.bmp')
     
-#Probando las piramides
-# r = RayTracer(800, 800)
-# r.envmap = Envmap('./envmap.bmp')
-# r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
+#Probando los triangulos
+r = RayTracer(800, 800)
+r.envmap = Envmap('./envmap.bmp')
+r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
 
-# r.scene = [
-#     Pyramid([(3, -1.4, -8.5), (1.9, -0.1, -8.5), (0.8, -1.4, -8.5), (2.5, -1, -10)], Material(diffuse = color(0.259, 0.412, 0.184),albedo=[0.7, 0.4, 0.2, 0], spec = 16))
-# ]
+r.scene = [
+    Triangle(V3(-0.1, 0, -1), V3(-0.1, 0.25, -1), V3(0, -0.001, -1), Material(diffuse=Color(139, 69, 19), albedo=[1, 0.2, 0.2, 0.3], spec=10,refractionIndex=1))
+]
 
-# r.render()
-# r.write('PyramidTest.bmp')
+r.render()
+r.write('TriangleTest.bmp')
 
 #Probando los cubos
 # r = RayTracer(800, 800)
