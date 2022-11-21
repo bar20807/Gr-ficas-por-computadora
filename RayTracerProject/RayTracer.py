@@ -169,7 +169,7 @@ class RayTracer(object):
 
 # r.scene = [
 #     Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
-#     Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=2))
+#     Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=3))
 # ]
 
 # r.render()

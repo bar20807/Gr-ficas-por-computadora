@@ -771,7 +771,7 @@ class Render(object):
         
         for y in range(self.height):
             for x in range(self.width):
-                f.write(self.framebuffer[y][x])
+                f.write(self.framebuffer[y][x].toBytes())
                 
         f.close()
 

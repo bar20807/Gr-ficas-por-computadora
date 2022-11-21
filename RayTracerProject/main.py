@@ -56,7 +56,18 @@ def drawing_a_bears():
     r.write('RT2.bmp')
 
 def Proyecto2():
-    return ""
+    r = RayTracer(800, 800)
+    #r.envmap = Envmap('./Proyecto2/envmapNight.bmp')  
+    r.light = Light(V3(-11, 11, 2), 4, Color(255, 255, 255))
+
+    r.scene = [
+        Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
+        Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=2))
+    ]
+
+    r.render()
+    r.write('Proyecto2.bmp')
+
     
     
 iterador= False
