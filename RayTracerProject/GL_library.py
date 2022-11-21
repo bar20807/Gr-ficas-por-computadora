@@ -7,7 +7,6 @@
 
 """
 import struct as st
-from turtle import width
 from ReadObj import ReadObj
 from Vector import *
 from math import *
@@ -93,6 +92,7 @@ class Render(object):
         self.glCreateWindow(self.width,self.height)
         self.glViewport(0,0,self.width, self.height)
         self.glClear()
+        self.shape= None
         self.Model= None
         self.View= None
 
@@ -512,53 +512,202 @@ class Render(object):
 
         for i in range(len(polygon)):
             self.line(polygon[i], polygon[(i - 1) %
-                        len(polygon)], clr)    
+                        len(polygon)], clr)
     
-    def triangle_std(self,A,B,C,clr=None):
-        if A.y > B.y:
-            A,B=B,A
-        if A.y>C.y:
-            A,C=C,A
-        if B.y > C.y:
-            B,C=C,B
-        
-        dx_ac= C.x-A.x
-        dy_ac= C.y-A.y
-        
-        if dy_ac==0:
-            return
-        
-        mi_ac=dx_ac/dy_ac
+    def triangle_shaders(self, A, B, C):
 
-        dx_ab=B.x-A.x
-        dy_ab=B.y-A.y
+        bbox_min, bbox_max = bounding_box(A, B, C)
         
-        if dy_ab!=0:
-            mi_ab=dx_ab/dy_ab
-            for y in range(round(A.y),round(B.y+1)):
-                xi= round(A.x - mi_ac*(A.y-y))
-                xf= round(A.x - mi_ab*(A.y-y))
-                if xi>xf:
-                    xi,xf=xf,xi
-                    
-                for x in range(xi,xf):
-                    self.glPoint(x,y,clr)
-        
-        dx_bc=C.x-B.x
-        dy_bc=C.y-B.y
-        
-        if dy_bc!=0:
-            mi_bc=dx_bc/dy_bc  
-            for y in range(round(B.y),round(C.y+1)):
-                xi= round(A.x - mi_ac*(A.y-y))
-                xf= round(B.x - mi_bc*(B.y-y))
-                if xi>xf:
-                    xi,xf=xf,xi
-                    
-                for x in range(xi,xf):
-                    self.glPoint(x,y,clr)
-            
-        
+        for x in range(round(bbox_min.x), round(bbox_max.x) + 1):
+            for y in range(round(bbox_min.y), round(bbox_max.y) + 1):
+                P = V3(x, y)
+                w, v, u = barycentric(A, B, C, P)
+                if w < 0 or v < 0 or u < 0:
+                    # point is outside
+                    continue
+
+                z = A.z * u + B.z * v + C.z * w
+
+                r, g, b = self.shaders(
+                    x, y
+                )
+
+                shader_color = color(r, g, b)
+
+                if z > self.zBuffer[y][x]:
+                    self.glPoint(x, y, shader_color)
+                    self.zBuffer[y][x] = z
+    
+    def radio(self,x,y):
+        return int(sqrt(x*x + y*y))
+    
+    def shaders(self, x=0, y=0, planet='Jupiter'):
+    
+        shader_color = 0, 0, 0
+        current_shape = self.shape
+
+        r1, g1, b1 = 0, 0, 0
+        r2, g2, b2 = 0, 0, 0
+        percentage = 1
+
+        if current_shape == planet:
+            if y >= 375 and y <= 425:
+                r1, g1, b1 = 115, 145, 170
+                r2, g2, b2 = 136, 195, 222
+                percentage = abs(y - 400)
+
+            if (y > 325 and y < 375) or (y > 425 and y < 475):
+                if y < 450 or y > 350:
+                    r1, g1, b1 = 136, 195, 222
+                    r2, g2, b2 = 156, 152, 164
+                    percentage = abs(y - 400)
+
+                    if y >= 450 or y <= 350:
+                        r1, g1, b1 = 115, 145, 170
+                        r2, g2, b2 = 156, 152, 164
+                        if y < 450 or y > 350:
+                            r1, g1, b1 = 156, 152, 164
+                            r2, g2, b2 = 156, 152, 164
+                            percentage = abs(y - 400)
+
+                            if y >= 450 or y <= 350:
+                                r1, g1, b1 = 156, 152, 164
+                                r2, g2, b2 = 156, 152, 164
+
+                if y >= 450 or y <= 350:
+                    r1, g1, b1 = 115, 145, 170
+                    r2, g2, b2 = 156, 152, 164
+                    if y >= 450:
+                        percentage = abs(y - 450)
+                    else:
+                        percentage = abs(y - 350)
+
+            if (y <= 325 and y >= 260) or (y <= 540 and y >= 475):
+                if y < 500 or y > 300:
+                    r1, g1, b1 = 156, 152, 164
+                    r2, g2, b2 = 136, 195, 222                    
+                    if y <= 325:
+                        percentage = abs(y - 350)
+                    else:
+                        percentage = abs(y - 450)
+
+                if y >= 500 or y <= 300:
+                    r1, g1, b1 = 136, 195, 222
+                    r2, g2, b2 = 115, 145, 170
+                    if y <= 300:
+                        percentage = abs(y - 300)
+                    else:
+                        percentage = abs(y - 500)
+                
+            # Gradientes
+            percentage = (percentage / 50)
+            r = r1 + percentage * (r2 - r1)
+            g = g1 + percentage * (g2 - g1)
+            b = b1 + percentage * (b2 - b1)
+            shader_color = r, g, b
+
+            if (y % 40) in range(0, 14):
+                r, g, b = shader_color
+                r *= 0.98
+                g *= 0.98
+                b *= 0.98
+                shader_color = r, g, b
+
+        b, g, r = shader_color
+        b /= 255
+        g /= 255
+        r /= 255
+
+        intensity = 1
+
+        if current_shape == planet:
+            intensity = (self.radio(x - 120, y - 390) + 50) / 400
+            intensity = 1 - (intensity * 0.95) ** 4
+
+        b *= intensity
+        g *= intensity
+        r *= intensity
+
+        if intensity > 0:
+            return r, g, b
+        else:
+            return 0, 0, 0
+
+    def load_shaders(self, filename, tras=[0, 0], size=[1, 1], shape=None):
+        model = ReadObj(filename)
+        self.shape = shape
+
+        for face in model.faces:
+            vcount = len(face)
+
+            if vcount == 3:
+                face1 = face[0][0] - 1
+                face2 = face[1][0] - 1
+                face3 = face[2][0] - 1
+
+                v1 = model.vertices[face1]
+                v2 = model.vertices[face2]
+                v3 = model.vertices[face3]
+
+                x1 = round((v1[0] * size[0]) + tras[0])
+                y1 = round((v1[1] * size[1]) + tras[1])
+                z1 = round((v1[2] * size[2]) + tras[2])
+
+                x2 = round((v2[0] * size[0]) + tras[0])
+                y2 = round((v2[1] * size[1]) + tras[1])
+                z2 = round((v2[2] * size[2]) + tras[2])
+
+                x3 = round((v3[0] * size[0]) + tras[0])
+                y3 = round((v3[1] * size[1]) + tras[1])
+                z3 = round((v3[2] * size[2]) + tras[2])
+
+                a = V3(x1, y1, z1)
+                b = V3(x2, y2, z2)
+                c = V3(x3, y3, z3)
+
+                vn0 = model.normals[face[0][2] - 1]
+                vn1 = model.normals[face[1][2] - 1]
+                vn2 = model.normals[face[2][2] - 1]
+
+                self.triangle_shaders(a, b, c)
+
+            else:
+                face1 = face[0][0] - 1
+                face2 = face[1][0] - 1
+                face3 = face[2][0] - 1
+                face4 = face[3][0] - 1
+
+                v1 = model.vertices[face1]
+                v2 = model.vertices[face2]
+                v3 = model.vertices[face3]
+                v4 = model.vertices[face4]
+
+                x1 = round((v1[0] * size[0]) + tras[0])
+                y1 = round((v1[1] * size[1]) + tras[1])
+                z1 = round((v1[2] * size[2]) + tras[2])
+
+                x2 = round((v2[0] * size[0]) + tras[0])
+                y2 = round((v2[1] * size[1]) + tras[1])
+                z2 = round((v2[2] * size[2]) + tras[2])
+
+                x3 = round((v3[0] * size[0]) + tras[0])
+                y3 = round((v3[1] * size[1]) + tras[1])
+                z3 = round((v3[2] * size[2]) + tras[2])
+
+                x4 = round((v4[0] * size[0]) + tras[0])
+                y4 = round((v4[1] * size[1]) + tras[1])
+                z4 = round((v4[2] * size[2]) + tras[2])
+
+                a = V3(x1, y1, z1)
+                b = V3(x2, y2, z2)
+                c = V3(x3, y3, z3)
+                d = V3(x4, y4, z4)
+
+                self.triangle_shaders(a, b, c)
+                self.triangle_shaders(a, c, d)
+
+    
+    
     
     def triangle(self, A, B, C, texCoords = (), texture = None, color = None, intensity = 1):
         
@@ -622,9 +771,10 @@ class Render(object):
         
         for y in range(self.height):
             for x in range(self.width):
-                f.write(self.framebuffer[y][x].toBytes())
+                f.write(self.framebuffer[y][x])
                 
         f.close()
+
         
         
         
