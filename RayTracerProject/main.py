@@ -1,5 +1,5 @@
 from RayTracer import *
-
+from AmbientLight import *
 
 def drawing_a_snowman():
     r = RayTracer(2024,2024)
@@ -56,15 +56,39 @@ def drawing_a_bears():
     r.write('RT2.bmp')
 
 def Proyecto2():
+    
+    #Creación de los materiales
+    amarillo_pirámide1 = Material(diffuse=Color(204,174,82), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
+    amarillo_pirámide2 = Material(diffuse=Color(255,217,102), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
+    amarillo_pirámide3 = Material(diffuse = Color(163,139,66), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
+    amarillo_pirámide4 = Material(diffuse = Color(255,225,133), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
+    azul_agua = Material(diffuse=Color(163,199,233), albedo=[0, 0.6, 0, 0.9], spec=70, refractionIndex=2)
+    blanco_luna = Material(diffuse = Color(250, 245, 250), albedo=[0.5, 0.4, 0.2, 0.5], spec=126, refractionIndex=1)
+    amarillo_suelo = Material(diffuse = Color(255,225,133), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
+    
+    
     r = RayTracer(800, 800)
-    #r.envmap = Envmap('./Proyecto2/envmapNight.bmp')  
-    r.light = Light(V3(-11, 11, 2), 4, Color(255, 255, 255))
-
+    r.envmap = Envmap('./Proyecto2/envmapNight.bmp')
+    r.light = Light(V3(-2, -280, -300), 2, Color(255, 255, 255))
+    #Segunda luz a utilizar
+    r.light2 = Light(V3( -2, -280, -10),  2,Color(255, 255, 255))
+    # r.AmbientLight = AmbientLight(strength= 0.05)
+    
+    
+    #Declaramos las pirámides
     r.scene = [
-        Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
-        Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=2))
+        Pyramid([V3(-1, 0, -10), V3(-3, -2, -10), V3(-5, 0, -10), V3(-1, 0, -10)], amarillo_pirámide2),
+        Pyramid([V3(1, 0, -10), V3(3, -2, -10), V3(5, 0, -10), V3(1, 0, -10)], amarillo_pirámide2),
+        Pyramid([V3(-2, 0, -10), V3(-4, -2, -10), V3(-6, 0, -10), V3(-2, 0, -10)], amarillo_pirámide1),
+        Pyramid([V3(2, 0, -10), V3(4, -2, -10), V3(6, 0, -10), V3(2, 0, -10)], amarillo_pirámide1),
+        Pyramid([V3(0, 0, -10), V3(-2, -2, -10), V3(-4, 0, -10), V3(0, 0, -10)], amarillo_pirámide3),
+        Pyramid([V3(0, 0, -10), V3(2, -2, -10), V3(4, 0, -10), V3(0, 0, -10)], amarillo_pirámide3),
+        Pyramid([V3(2, 0, -9), V3(0, -3, -9), V3(-2, 0, -9), V3(2, 0, -9)], amarillo_pirámide4),
+        Sphere(V3(0, -3, -12), 2, blanco_luna),
+        Plane(V3(0, 5, -8),20,20, azul_agua)
     ]
-
+    
+    
     r.render()
     r.write('Proyecto2.bmp')
 
@@ -76,7 +100,7 @@ opciones= 0
 while not iterador:
     
     print("-+-+-+-+-+-+-+-+-+-+-+-+-+ BIENVENIDO A MI Raytracer -+-+-+-+-+-+-+-+-+-+-+-+-+")
-    print("\n 1) Mostrar RT1 \n 2) Mostrar RT2 " "\n 3) Proyecto (Proximamente...) \n 4) Salir ")
+    print("\n 1) Mostrar RT1 \n 2) Mostrar RT2 " "\n 3) Proyecto 2 \n 4) Salir ")
     opciones= int(input("\n Elige una de las siguientes opciones: "))
     
     

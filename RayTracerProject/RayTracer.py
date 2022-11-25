@@ -49,7 +49,9 @@ class RayTracer(object):
         self.current_color=Color(255,255,255)
         self.scene=[]
         self.envmap = None
+        self.AmbientLight = None
         self.light = Light(V3(0, 0, 0), 2, Color(255,255,255))
+        self.light2 = Light(V3(0,0,0),2 ,Color(255,255,255))
         self.clear()
         
     def clear(self):
@@ -91,49 +93,94 @@ class RayTracer(object):
             return self.background(direction)
         
         light_dir = (self.light.position - intersect.point).norm()
+        #Declaramos la segunda luz
+        light_dir2 = (self.light2.position - intersect.point).norm()
+        light_distance = V3.length(self.light.position - intersect.point)
+        light_distance2 = V3.length(self.light2.position - intersect.point)
+        
+        if self.AmbientLight:
+            ambient = self.AmbientLight.color * self.AmbientLight.strength
+        else:
+            ambient = self.clear_color
         
         # Shadow
         shadow_bias = 1.1
         shadow_orig = intersect.point + (intersect.normal * shadow_bias)
-        shadow_material = self.scene_intersect(shadow_orig, light_dir)
+        shadow_material, shadowIntersect = self.scene_intersect(shadow_orig, light_dir)
+        shadow_material2, shadowIntersect2 = self.scene_intersect(shadow_orig, light_dir2)
         shadow_intensity = 0
+        shadow_intensity2 = 0
         
-        if shadow_material:
+        if shadow_material and shadow_material2 and V3.length(shadowIntersect.point - shadow_orig) < light_distance and V3.length(shadowIntersect2.point - shadow_orig) < light_distance2:
             shadow_intensity = 0.7
+            shadow_intensity2 = 0.7
         
         # Diffuse component
         diffuse_intensity = light_dir @ intersect.normal
+        diffuse_intensity2 = light_dir2 @ intersect.normal
         diffuse = material.diffuse * diffuse_intensity * material.albedo[0] * (1 - shadow_intensity)
+        diffuse2 = material.diffuse * diffuse_intensity2 * material.albedo[0] * (1 - shadow_intensity2)
        
         # Specular component
         light_reflection = reflect(light_dir, intersect.normal)
+        #Segunda luz de reflección
+        light_reflection2 = reflect(light_dir2,intersect.normal)
+        #Primera intensidad de reflexión
         reflection_intensity = max(0, (light_reflection @ direction))
+        #Segunda intensidad de reflexión
+        reflection_intensity2 = max(0, (light_reflection2 @ direction))
+        #Primera specular intensity
         specular_intensity = self.light.intensity * (reflection_intensity ** material.spec)
+        #Segunda specular intensity
+        specular_intensity2 = self.light2.intensity * (reflection_intensity2 ** material.spec)
+        #Primer variable specular
         specular = self.light.color * specular_intensity * material.albedo[1]
+        #segunda variable specular
+        specular2 = self.light2.color * specular_intensity2 * material.albedo[1]
         
         # Reflection
         if material.albedo[2] > 0:
             reflect_direction = reflect(direction, intersect.normal)
+            #Declaramos la segunda variable
+            reflect_direction2 = reflect(direction, intersect.normal)
             reflect_bias = -0.5 if reflect_direction @ intersect.normal < 0 else 0.5
-            reflect_origin = intersect.point + (intersect.normal * reflect_bias) 
+            #Declaramos la segunda variable
+            reflect_bias2 = -0.5 if reflect_direction2 @ intersect.normal < 0 else 0.5
+            reflect_origin = intersect.point + (intersect.normal * reflect_bias)
+            #Declaramos la segunda variable
+            reflect_origin2 = intersect.point + (intersect.normal * reflect_bias2)
             reflect_color = self.cast_ray(reflect_origin, reflect_direction, recursion + 1)
+            #Declaramos la segunda variable
+            reflect_color2 = self.cast_ray(reflect_origin2, reflect_direction2, recursion + 1)
         else:
             reflect_color = Color(0, 0, 0)
+            reflect_color2 = Color(0,0,0)
             
         reflection = reflect_color * material.albedo[2]
+        reflection2 = reflect_color2 * material.albedo[2]
         
         # Refraction
         if material.albedo[3] > 0:
             refract_direction = refract(direction, intersect.normal, material.refractionIndex)
+            #Declaramos la segunda variable
+            refract_direction2 = refract(direction, intersect.normal, material.refractionIndex)
             refract_bias = -0.5 if ((refract_direction @ intersect.normal) < 0) else 0.5
-            refract_origin = intersect.point + (intersect.normal * refract_bias) 
+            #Declaramos la segunda variable
+            refract_bias2 = -0.5 if ((refract_direction2 @ intersect.normal) < 0) else 0.5
+            refract_origin = intersect.point + (intersect.normal * refract_bias)
+            #Declaramos la segunda variable
+            refract_origin2 = intersect.point + (intersect.normal * refract_bias2)
             refract_color = self.cast_ray(refract_origin, refract_direction, recursion + 1)
+            #Declaramos la segunda variable
+            refract_color2 = self.cast_ray(refract_origin2, refract_direction2, recursion + 1)
         else:
             refract_color = Color(0, 0, 0)
+            refract_color2 = Color(0,0,0)
             
         refraction = refract_color * material.albedo[3]
+        refraction2 = refract_color2 * material.albedo[3]
         
-        return diffuse + specular + reflection + refraction
+        return ambient  + diffuse + specular + reflection + refraction + diffuse2 + specular2 + reflection2 + refraction2
         
      
     def scene_intersect(self, origin, direction):
@@ -162,14 +209,14 @@ class RayTracer(object):
 # r.write('scene_intersect_prueba.bmp')
         
         
-#Probando el envmap y el plano
+#Probando el envmap
 # r = RayTracer(800, 800)
 # r.envmap = Envmap('./envmap.bmp')
 # r.light = Light(V3(-11, 11, 2), 2, Color(255, 255, 255))
 
 # r.scene = [
 #     Sphere(V3(0, -2, -11), 2, Material(diffuse=Color(255,255,255), albedo=[0.7, 0.4, 0.2, 0], spec=60)),
-#     Sphere(V3(0, 0, -7), 1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=3))
+#     Sphere(V3(0, 0, -7), 1,1, Material(diffuse=Color(160,170,210), albedo=[0, 0.6, 0, 0.9], spec=126, refractionIndex=3))
 # ]
 
 # r.render()
