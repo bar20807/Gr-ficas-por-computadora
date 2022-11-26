@@ -85,7 +85,7 @@ def Proyecto2():
         Pyramid([V3(0, 0, -10), V3(2, -2, -10), V3(4, 0, -10), V3(0, 0, -10)], amarillo_pirámide3),
         Pyramid([V3(2, 0, -9), V3(0, -3, -9), V3(-2, 0, -9), V3(2, 0, -9)], amarillo_pirámide4),
         Sphere(V3(0, -3, -12), 2, blanco_luna),
-        Plane(V3(0, 5, -8),20,20, azul_agua)
+        Plane(V3(0, 0, -5),110,110, azul_agua),
     ]
     
     
