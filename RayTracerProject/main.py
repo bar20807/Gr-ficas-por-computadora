@@ -69,9 +69,9 @@ def Proyecto2():
     
     r = RayTracer(800, 800)
     r.envmap = Envmap('./Proyecto2/envmapNight.bmp')
-    r.light = Light(V3(-2, -280, -300), 2, Color(255, 255, 255))
+    r.light = Light(V3(-2, 0, -250), 2, Color(255, 255, 255))
     #Segunda luz a utilizar
-    r.light2 = Light(V3( -2, -280, -10),  2,Color(255, 255, 255))
+    r.light2 = Light(V3( 2, -200, -10),  2,Color(255, 255, 255))
     # r.AmbientLight = AmbientLight(strength= 0.05)
     
     
