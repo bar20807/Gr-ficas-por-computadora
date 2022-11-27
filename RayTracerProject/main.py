@@ -62,7 +62,7 @@ def Proyecto2():
     amarillo_pirámide2 = Material(diffuse=Color(255,217,102), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
     amarillo_pirámide3 = Material(diffuse = Color(163,139,66), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
     amarillo_pirámide4 = Material(diffuse = Color(255,225,133), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
-    azul_agua = Material(diffuse=Color(163,199,233), albedo=[0, 0.6, 0, 0.9], spec=70, refractionIndex=2)
+    azul_agua = Material(diffuse=Color(163,199,233), albedo=[0.7, 0.5, 0.3, 0.6], spec=30, refractionIndex=1)
     blanco_luna = Material(diffuse = Color(250, 245, 250), albedo=[0.5, 0.4, 0.2, 0.5], spec=126, refractionIndex=1)
     amarillo_suelo = Material(diffuse = Color(255,225,133), albedo = [1, 1, 0, 0], spec = 50, refractionIndex = 0)
     
@@ -85,7 +85,7 @@ def Proyecto2():
         Pyramid([V3(0, 0, -10), V3(2, -2, -10), V3(4, 0, -10), V3(0, 0, -10)], amarillo_pirámide3),
         Pyramid([V3(2, 0, -9), V3(0, -3, -9), V3(-2, 0, -9), V3(2, 0, -9)], amarillo_pirámide4),
         Sphere(V3(0, -3, -12), 2, blanco_luna),
-        Plane(V3(0, 0, -5),110,110, azul_agua),
+        Plane(V3(0, 2, 15),110,110, azul_agua),
     ]
     
     
